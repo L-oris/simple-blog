@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+	"errors"
 	"time"
 )
 
@@ -12,10 +14,25 @@ type Post struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+// EmptyPost is used for comparing empty Post values
+var EmptyPost = Post{}
+
 // IsValidPost validates Post coming from client
 func IsValidPost(p Post) bool {
 	if p.ID == "" || p.Title == "" {
 		return false
 	}
 	return true
+}
+
+// PostFromJSON creates a Post out of JSON
+func PostFromJSON(jsonPost []byte) (Post, error) {
+	var newPost Post
+	err := json.Unmarshal(jsonPost, &newPost)
+	if err != nil {
+		errMessage := "models.PostFromJSON > unmarshal error: " + err.Error()
+		return Post{}, errors.New(errMessage)
+	}
+
+	return newPost, nil
 }

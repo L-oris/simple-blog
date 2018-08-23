@@ -14,8 +14,8 @@ func main() {
 	router.GET("/", Welcome)
 	router.GET("/posts", blogController.GetAll)
 	router.POST("/post", blogController.Add)
-	// router.GET("/post/:id", GetById)
-	// router.PUT("/post/:id", UpdateById)
+	router.GET("/post/:id", blogController.GetByID)
+	router.PUT("/post/:id", blogController.UpdateByID)
 	// router.DELETE("/post/:id", DeleteById)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
