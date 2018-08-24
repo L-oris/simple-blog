@@ -22,6 +22,11 @@ func NewBlogController() *BlogController {
 	}
 }
 
+// Home serves the Home page
+func (c BlogController) Home(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	w.Write([]byte("Hello world"))
+}
+
 // GetAll gets all models.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	if len(c.store) == 0 {
@@ -104,5 +109,13 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request, ps 
 	}
 
 	c.store[currentPost.ID] = currentPost
+	w.Write([]byte("OK"))
+}
+
+// DeleteByID deletes a models.Post by ID
+// It doesn't care if the Post exists or not
+func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	postID := ps.ByName("id")
+	delete(c.store, postID)
 	w.Write([]byte("OK"))
 }
