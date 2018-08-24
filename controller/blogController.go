@@ -22,6 +22,7 @@ func NewBlogController() *BlogController {
 	}
 }
 
+// GetAll gets all models.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	if len(c.store) == 0 {
 		w.Write([]byte("The store is empty"))
@@ -34,6 +35,7 @@ func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request, _ httpr
 	}
 }
 
+// Add adds a models.Post to the store
 func (c BlogController) Add(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	bsJSON, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -56,6 +58,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request, _ httprout
 	w.Write([]byte("OK"))
 }
 
+// GetByID gets a models.Post by ID from store
 func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	postID := ps.ByName("id")
 	post := c.store[postID]
@@ -93,7 +96,7 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request, ps 
 		return
 	}
 
-	if err = mergo.Merge(&currentPost, newPartialPost); err != nil {
+	if err = mergo.Merge(&currentPost, newPartialPost, mergo.WithOverride); err != nil {
 		log.Println("controller.UpdateById > invalid post provided:", err)
 		errMessage := "Invalid post provided"
 		httperror.BadRequest(w, errMessage)
