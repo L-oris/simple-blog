@@ -48,7 +48,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 
-	newPost, err := models.PostFromJSON(bsJSON)
+	newPost, err := models.FromJSON(bsJSON)
 	if err != nil {
 		httperror.BadRequest(w, "Invalid JSON")
 		return
@@ -97,7 +97,7 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 
-	newPartialPost, err := models.PostFromJSON(bsJSON)
+	newPartialPost, err := models.FromJSON(bsJSON)
 	if err != nil {
 		httperror.BadRequest(w, "Invalid JSON")
 		return

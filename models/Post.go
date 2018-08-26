@@ -25,8 +25,8 @@ func IsValidPost(p Post) bool {
 	return true
 }
 
-// PostFromJSON creates a Post out of JSON
-func PostFromJSON(jsonPost []byte) (Post, error) {
+// FromJSON creates a Post out of JSON
+func FromJSON(jsonPost []byte) (Post, error) {
 	var newPost Post
 	err := json.Unmarshal(jsonPost, &newPost)
 	if err != nil {
