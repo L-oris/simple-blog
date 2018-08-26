@@ -8,8 +8,8 @@ import (
 
 	"github.com/L-oris/mongoRestAPI/httperror"
 	"github.com/L-oris/mongoRestAPI/models"
+	"github.com/gorilla/mux"
 	"github.com/imdario/mergo"
-	"github.com/julienschmidt/httprouter"
 )
 
 type BlogController struct {
@@ -23,12 +23,12 @@ func NewBlogController() *BlogController {
 }
 
 // Home serves the Home page
-func (c BlogController) Home(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("Hello world"))
 }
 
 // GetAll gets all models.Post from the store
-func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
 	if len(c.store) == 0 {
 		w.Write([]byte("The store is empty"))
 		return
@@ -41,7 +41,7 @@ func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request, _ httpr
 }
 
 // Add adds a models.Post to the store
-func (c BlogController) Add(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	bsJSON, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Fatalln("controller.Add > reading error:", err)
@@ -64,8 +64,9 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request, _ httprout
 }
 
 // GetByID gets a models.Post by ID from store
-func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	postID := ps.ByName("id")
+func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	postID := vars["id"]
 	post := c.store[postID]
 	if post == models.EmptyPost {
 		errorMessage := "Post " + postID + " not found"
@@ -80,8 +81,9 @@ func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request, ps htt
 }
 
 // UpdateByID accepts a partial models.Post and update its fields
-func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	postID := ps.ByName("id")
+func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	postID := vars["id"]
 	currentPost := c.store[postID]
 	if currentPost == models.EmptyPost {
 		errMessage := "Post " + postID + " not found"
@@ -114,8 +116,14 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request, ps 
 
 // DeleteByID deletes a models.Post by ID
 // It doesn't care if the Post exists or not
-func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	postID := ps.ByName("id")
+func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	postID := vars["id"]
 	delete(c.store, postID)
 	w.Write([]byte("OK"))
+}
+
+// RouteNotFound handles requests to routes not implemented
+func (c BlogController) RouteNotFound(w http.ResponseWriter, req *http.Request) {
+	httperror.NotFound(w, "Route Not Found")
 }
