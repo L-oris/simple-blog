@@ -24,7 +24,10 @@ func NewBlogController() *BlogController {
 
 // Home serves the Home page
 func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
-	w.Write([]byte("Hello world"))
+	tplName := "home.gohtml"
+	if err := models.TPL.ExecuteTemplate(w, tplName, nil); err != nil {
+		log.Fatalln("controller.Home > cannot execute", tplName, "template:", err)
+	}
 }
 
 // GetAll gets all models.Post from the store
