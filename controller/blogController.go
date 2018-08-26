@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -37,9 +36,8 @@ func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err := json.NewEncoder(w).Encode(c.store)
-	if err != nil {
-		log.Fatalln("controller.GetAll > encoding error:", err)
+	if err := models.TPL.ExecuteTemplate(w, "all.gohtml", c.store); err != nil {
+		log.Fatalln("controller.GetAll > executing template error:", err)
 	}
 }
 
@@ -77,9 +75,8 @@ func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err := json.NewEncoder(w).Encode(post)
-	if err != nil {
-		log.Fatalln("controller.GetAll > encoding error:", err)
+	if err := models.TPL.ExecuteTemplate(w, "byID.gohtml", post); err != nil {
+		log.Fatalln("controller.GetByID > executing template error:", err)
 	}
 }
 
