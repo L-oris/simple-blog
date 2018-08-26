@@ -12,6 +12,7 @@ import (
 func main() {
 	blogController := controller.NewBlogController()
 	router := mux.NewRouter()
+	router.Use(blogController.LoggingMiddleware)
 	router.HandleFunc("/", blogController.Home).Methods("GET")
 	router.HandleFunc("/posts", blogController.GetAll).Methods("GET")
 	router.HandleFunc("/post", blogController.Add).Methods("POST")

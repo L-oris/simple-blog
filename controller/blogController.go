@@ -127,3 +127,11 @@ func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
 func (c BlogController) RouteNotFound(w http.ResponseWriter, req *http.Request) {
 	httperror.NotFound(w, "Route Not Found")
 }
+
+// LoggingMiddleware logs all incoming requests
+func (c BlogController) LoggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		log.Println("controller.LoggingMiddleware:", req.Method, req.RequestURI)
+		next.ServeHTTP(w, req)
+	})
+}
