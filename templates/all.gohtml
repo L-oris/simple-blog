@@ -2,7 +2,7 @@
     <ul>
     {{range .}}
         <li>
-        <h4>Title - {{.Title}}</h4>
+        <a href="/post/{{.ID}}"><h4>Title - {{.Title}}</h4></a>
         <p>At: {{.CreatedAt.Format "02 Jan 06"}}</p>
         </li>
     {{end}}

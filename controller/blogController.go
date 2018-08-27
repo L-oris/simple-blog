@@ -41,27 +41,30 @@ func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// New renders the template for adding new models.Post
+func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
+	if err := models.TPL.ExecuteTemplate(w, "new.gohtml", c.store); err != nil {
+		log.Fatalln("controller.New > executing template error:", err)
+	}
+}
+
 // Add adds a models.Post to the store
 func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
-	bsJSON, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		log.Fatalln("controller.Add > reading error:", err)
+	req.ParseForm()
+	partialPost := models.Post{
+		Title:   req.Form["title"][0],
+		Content: req.Form["content"][0],
 	}
-	defer req.Body.Close()
-
-	newPost, err := models.FromJSON(bsJSON)
+	newPost, err := models.GeneratePost(partialPost)
 	if err != nil {
-		httperror.BadRequest(w, "Invalid JSON")
-		return
-	}
-
-	if !models.IsValidPost(newPost) {
-		httperror.BadRequest(w, "Bad Post")
+		httperror.BadRequest(w, "Invalid data provided")
 		return
 	}
 
 	c.store[newPost.ID] = newPost
-	w.Write([]byte("OK"))
+	if err := models.TPL.ExecuteTemplate(w, "byID.gohtml", newPost); err != nil {
+		log.Fatalln("controller.Add > executing template error:", err)
+	}
 }
 
 // GetByID gets a models.Post by ID from store

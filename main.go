@@ -15,6 +15,7 @@ func main() {
 	router.Use(blogController.LoggingMiddleware)
 	router.HandleFunc("/", blogController.Home).Methods("GET")
 	router.HandleFunc("/posts", blogController.GetAll).Methods("GET")
+	router.HandleFunc("/add", blogController.New).Methods("GET")
 	router.HandleFunc("/post", blogController.Add).Methods("POST")
 	router.HandleFunc("/post/{id}", blogController.GetByID).Methods("GET")
 	router.HandleFunc("/post/{id}", blogController.UpdateByID).Methods("PUT")
