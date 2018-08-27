@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 // Post model
@@ -35,4 +37,11 @@ func FromJSON(jsonPost []byte) (Post, error) {
 	}
 
 	return newPost, nil
+}
+
+func GeneratePost(partialPost Post) (Post, error) {
+	partialPost.ID = uuid.Must(uuid.NewV4(), nil).String()
+	partialPost.CreatedAt = time.Now()
+
+	return partialPost, nil
 }
