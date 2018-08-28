@@ -31,11 +31,6 @@ func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
 
 // GetAll gets all models.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
-	if len(c.store) == 0 {
-		w.Write([]byte("The store is empty"))
-		return
-	}
-
 	if err := models.TPL.ExecuteTemplate(w, "all.gohtml", c.store); err != nil {
 		log.Fatalln("controller.GetAll > executing template error:", err)
 	}

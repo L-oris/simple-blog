@@ -1,4 +1,10 @@
 {{template "header" "All"}}
+
+{{$length := len .}}
+{{if eq $length 0}}
+    <h3>The store is empty</h3>
+{{else}}
+    <h3>Here are all the posts</h3>
     <ul>
     {{range .}}
         <li>
@@ -7,4 +13,6 @@
         </li>
     {{end}}
     </ul>
+{{end}}
+
 {{template "footer"}}
