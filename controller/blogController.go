@@ -31,14 +31,14 @@ func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
 
 // GetAll gets all models.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
-	if err := models.TPL.ExecuteTemplate(w, "all.gohtml", c.store); err != nil {
+	if err := models.TPL.ExecuteTemplate(w, "posts/all.gohtml", c.store); err != nil {
 		log.Fatalln("controller.GetAll > executing template error:", err)
 	}
 }
 
 // New renders the template for adding new models.Post
 func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
-	if err := models.TPL.ExecuteTemplate(w, "new.gohtml", c.store); err != nil {
+	if err := models.TPL.ExecuteTemplate(w, "posts/new.gohtml", c.store); err != nil {
 		log.Fatalln("controller.New > executing template error:", err)
 	}
 }
@@ -57,7 +57,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	}
 
 	c.store[newPost.ID] = newPost
-	if err := models.TPL.ExecuteTemplate(w, "byID.gohtml", newPost); err != nil {
+	if err := models.TPL.ExecuteTemplate(w, "posts/byID.gohtml", newPost); err != nil {
 		log.Fatalln("controller.Add > executing template error:", err)
 	}
 }
@@ -73,7 +73,7 @@ func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := models.TPL.ExecuteTemplate(w, "byID.gohtml", post); err != nil {
+	if err := models.TPL.ExecuteTemplate(w, "posts/byID.gohtml", post); err != nil {
 		log.Fatalln("controller.GetByID > executing template error:", err)
 	}
 }
