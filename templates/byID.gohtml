@@ -1,5 +1,5 @@
 {{define "title"}}
-    <title>Post by Id</title>
+    Post by Id
 {{end}}
 
 {{define "content"}}
@@ -7,5 +7,3 @@
     <p>{{.Content}}</p>
     <h6>{{.CreatedAt.Format "02 Jan 2006, 15.04"}}</h6>
 {{end}}
-
-{{template "layout" .}}

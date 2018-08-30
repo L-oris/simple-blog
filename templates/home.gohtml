@@ -1,3 +1,8 @@
-{{template "header" "Home"}}
+{{define "title"}}Home{{end}}
+{{define "content"}}
     <h1>Welcome to our Blog!</h1>
-{{template "footer"}}
+    <ul>
+        <li><a href="/posts">Posts</a></li>
+        <li><a href="/">Home</a></li>
+    </ul>
+{{end}}
