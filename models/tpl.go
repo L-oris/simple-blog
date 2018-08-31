@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,24 +9,23 @@ import (
 	"github.com/oxtoacart/bpool"
 )
 
-// TPL holds a reference to all templates
-var TPL *template.Template
+type TemplateConfig struct {
+	TemplateLayoutPath  string
+	TemplateIncludePath string
+}
 
 func init() {
 	loadConfiguration()
 	loadTemplates()
 }
 
+// TPL holds a reference to all templates
+var TPL *template.Template
+
+var templateConfig TemplateConfig
 var templates map[string]*template.Template
 var bufpool *bpool.BufferPool
-
-type TemplateConfig struct {
-	TemplateLayoutPath  string
-	TemplateIncludePath string
-}
-
 var mainTmpl = `{{define "main" }} {{ template "base" . }} {{ end }}`
-var templateConfig TemplateConfig
 
 func loadConfiguration() {
 	templateConfig.TemplateLayoutPath = "templates/layouts/"
@@ -41,49 +39,46 @@ func loadTemplates() {
 
 	layoutFiles, err := filepath.Glob(templateConfig.TemplateLayoutPath + "*.gohtml")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("models.loadTemplates > error:", err)
 	}
 
 	includeFiles, err := filepath.Glob(templateConfig.TemplateIncludePath + "*.gohtml")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("models.loadTemplates > error:", err)
 	}
 
 	mainTemplate := template.New("main")
-
 	mainTemplate, err = mainTemplate.Parse(mainTmpl)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("models.loadTemplates > error:", err)
 	}
 	for _, file := range includeFiles {
 		fileName := filepath.Base(file)
 		files := append(layoutFiles, file)
 		templates[fileName], err = mainTemplate.Clone()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("models.loadTemplates > error:", err)
 		}
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
 	}
 
 	log.Println("templates loading successful")
-
 	bufpool = bpool.NewBufferPool(64)
 	log.Println("buffer allocation successful")
 }
 
+// RenderTemplate gets the template, fills it with data and sends it to ResponseWriter
 func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	tmpl, ok := templates[name]
 	if !ok {
-		http.Error(w, fmt.Sprintf("The template %s does not exist.", name),
-			http.StatusInternalServerError)
+		log.Fatalf("models.RenderTemplate > template %s does not exist", name)
 	}
 
 	buf := bufpool.Get()
 	defer bufpool.Put(buf)
 
-	err := tmpl.Execute(buf, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := tmpl.Execute(buf, data); err != nil {
+		log.Fatalln("models.RenderTemplate > cannot execute template", name)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
