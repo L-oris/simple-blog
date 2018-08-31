@@ -26,6 +26,14 @@
   version = "v0.3.6"
 
 [[projects]]
+  branch = "master"
+  digest = "1:df63a8ddf6fd32f2cdf09db1ada151c8a27f5fe2516ee977b72d6a0707e94910"
+  name = "github.com/oxtoacart/bpool"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6"
+
+[[projects]]
   digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
   name = "github.com/satori/go.uuid"
   packages = ["."]
@@ -39,6 +47,7 @@
   input-imports = [
     "github.com/gorilla/mux",
     "github.com/imdario/mergo",
+    "github.com/oxtoacart/bpool",
     "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"
