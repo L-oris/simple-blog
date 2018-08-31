@@ -6,11 +6,12 @@
 </head>
 <body>
     <body>
+        {{block "header" .}}{{end}}
+
         {{template "content" .}}
     </body>
     <footer>{{block "footer" .}} {{end}}</footer>
     {{block "script" .}} {{end}}
 </body>
 </html>
-
 {{ end }}
