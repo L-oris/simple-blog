@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/L-oris/mongoRestAPI/httperror"
-	"github.com/L-oris/mongoRestAPI/models/post"
-	"github.com/L-oris/mongoRestAPI/models/tpl"
+	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/models/post"
+	"github.com/L-oris/yabb/models/tpl"
 	"github.com/gorilla/mux"
 	"github.com/imdario/mergo"
 )

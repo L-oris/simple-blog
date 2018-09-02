@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/L-oris/mongoRestAPI/controller"
+	"github.com/L-oris/yabb/controller"
 	"github.com/gorilla/mux"
 )
 
