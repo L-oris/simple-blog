@@ -7,17 +7,18 @@ import (
 
 	"github.com/L-oris/mongoRestAPI/httperror"
 	"github.com/L-oris/mongoRestAPI/models"
+	"github.com/L-oris/mongoRestAPI/models/post"
 	"github.com/gorilla/mux"
 	"github.com/imdario/mergo"
 )
 
 type BlogController struct {
-	store map[string]models.Post
+	store map[string]post.Post
 }
 
 func NewBlogController() *BlogController {
 	return &BlogController{
-		store: make(map[string]models.Post),
+		store: make(map[string]post.Post),
 	}
 }
 
@@ -26,24 +27,24 @@ func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
 	models.RenderTemplate(w, "home.gohtml", nil)
 }
 
-// GetAll gets all models.Post from the store
+// GetAll gets all post.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
 	models.RenderTemplate(w, "all.gohtml", c.store)
 }
 
-// New renders the template for adding new models.Post
+// New renders the template for adding new post.Post
 func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
 	models.RenderTemplate(w, "new.gohtml", c.store)
 }
 
-// Add adds a models.Post to the store
+// Add adds a post.Post to the store
 func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
-	partialPost := models.Post{
+	partialPost := post.Post{
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
 	}
-	newPost, err := models.GeneratePost(partialPost)
+	newPost, err := post.GeneratePost(partialPost)
 	if err != nil {
 		httperror.BadRequest(w, "Invalid data provided")
 		return
@@ -53,26 +54,26 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	models.RenderTemplate(w, "byID.gohtml", newPost)
 }
 
-// GetByID gets a models.Post by ID from store
+// GetByID gets a post.Post by ID from store
 func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	postID := vars["id"]
-	post := c.store[postID]
-	if post == models.EmptyPost {
-		errorMessage := "Post " + postID + " not found"
+	fPostID := vars["id"]
+	fPost := c.store[fPostID]
+	if fPost == post.EmptyPost {
+		errorMessage := "Post " + fPostID + " not found"
 		httperror.NotFound(w, errorMessage)
 		return
 	}
 
-	models.RenderTemplate(w, "byID.gohtml", post)
+	models.RenderTemplate(w, "byID.gohtml", fPost)
 }
 
-// UpdateByID accepts a partial models.Post and update its fields
+// UpdateByID accepts a partial post.Post and update its fields
 func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	postID := vars["id"]
 	currentPost := c.store[postID]
-	if currentPost == models.EmptyPost {
+	if currentPost == post.EmptyPost {
 		errMessage := "Post " + postID + " not found"
 		httperror.NotFound(w, errMessage)
 		return
@@ -84,7 +85,7 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 
-	newPartialPost, err := models.FromJSON(bsJSON)
+	newPartialPost, err := post.FromJSON(bsJSON)
 	if err != nil {
 		httperror.BadRequest(w, "Invalid JSON")
 		return
@@ -101,7 +102,7 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("OK"))
 }
 
-// DeleteByID deletes a models.Post by ID
+// DeleteByID deletes a post.Post by ID
 // It doesn't care if the Post exists or not
 func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
