@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -27,17 +26,17 @@ func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "home.gohtml", nil)
 }
 
-// GetAll gets all post.Post from the store
+// GetAll gets all Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "all.gohtml", c.store)
 }
 
-// New renders the template for adding new post.Post
+// New renders the template for adding new Post
 func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
-	tpl.RenderTemplate(w, "new.gohtml", c.store)
+	tpl.RenderTemplate(w, "new.gohtml", nil)
 }
 
-// Add adds a post.Post to the store
+// Add adds a Post to the store
 func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	partialPost := post.Post{
@@ -54,55 +53,49 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "byID.gohtml", newPost)
 }
 
-// GetByID gets a post.Post by ID from store
+// GetByID gets a Post by ID from store
 func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	fPostID := vars["id"]
-	fPost := c.store[fPostID]
-	if fPost == post.EmptyPost {
-		errorMessage := "Post " + fPostID + " not found"
-		httperror.NotFound(w, errorMessage)
+	post, ok := c.getPostByIDFromStore(w, req)
+	if !ok {
 		return
 	}
-
-	tpl.RenderTemplate(w, "byID.gohtml", fPost)
+	tpl.RenderTemplate(w, "byID.gohtml", post)
 }
 
-// UpdateByID accepts a partial post.Post and update its fields
+func (c BlogController) EditByID(w http.ResponseWriter, req *http.Request) {
+	post, ok := c.getPostByIDFromStore(w, req)
+	if !ok {
+		return
+	}
+
+	tpl.RenderTemplate(w, "edit.gohtml", post)
+}
+
+// UpdateByID accepts a partial Post and update its fields
 func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	postID := vars["id"]
-	currentPost := c.store[postID]
-	if currentPost == post.EmptyPost {
-		errMessage := "Post " + postID + " not found"
-		httperror.NotFound(w, errMessage)
+	storePost, ok := c.getPostByIDFromStore(w, req)
+	if !ok {
 		return
 	}
 
-	bsJSON, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		log.Fatalln("controller.UpdateById > reading error:", err)
-	}
-	defer req.Body.Close()
-
-	newPartialPost, err := post.FromJSON(bsJSON)
-	if err != nil {
-		httperror.BadRequest(w, "Invalid JSON")
-		return
+	req.ParseForm()
+	newPartialPost := post.Post{
+		Title:   req.Form["title"][0],
+		Content: req.Form["content"][0],
 	}
 
-	if err = mergo.Merge(&currentPost, newPartialPost, mergo.WithOverride); err != nil {
+	if err := mergo.Merge(&storePost, newPartialPost, mergo.WithOverride); err != nil {
 		log.Println("controller.UpdateById > invalid post provided:", err)
 		errMessage := "Invalid post provided"
 		httperror.BadRequest(w, errMessage)
 		return
 	}
 
-	c.store[currentPost.ID] = currentPost
-	w.Write([]byte("OK"))
+	c.store[storePost.ID] = storePost
+	tpl.RenderTemplate(w, "byID.gohtml", storePost)
 }
 
-// DeleteByID deletes a post.Post by ID
+// DeleteByID deletes a Post by ID
 // It doesn't care if the Post exists or not
 func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
@@ -112,11 +105,13 @@ func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
 }
 
 // RouteNotFound handles requests to routes not implemented
+// TODO: move to separate controller
 func (c BlogController) RouteNotFound(w http.ResponseWriter, req *http.Request) {
 	httperror.NotFound(w, "Route Not Found")
 }
 
 // LoggingMiddleware logs all incoming requests
+// TODO: move to separate controller
 func (c BlogController) LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		log.Println("controller.LoggingMiddleware:", req.Method, req.RequestURI)

@@ -18,7 +18,8 @@ func main() {
 	router.HandleFunc("/add", blogController.New).Methods("GET")
 	router.HandleFunc("/post", blogController.Add).Methods("POST")
 	router.HandleFunc("/post/{id}", blogController.GetByID).Methods("GET")
-	router.HandleFunc("/post/{id}", blogController.UpdateByID).Methods("PUT")
+	router.HandleFunc("/post/{id}/edit", blogController.EditByID).Methods("GET")
+	router.HandleFunc("/post/{id}/edit", blogController.UpdateByID).Methods("POST")
 	router.HandleFunc("/post/{id}", blogController.DeleteByID).Methods("DELETE")
 
 	router.NotFoundHandler = http.HandlerFunc(blogController.RouteNotFound)
@@ -31,3 +32,5 @@ func main() {
 	}
 	log.Fatal(server.ListenAndServe())
 }
+
+// TODO: handle .favicon request
