@@ -1,4 +1,4 @@
-package models
+package tpl
 
 import (
 	"html/template"
@@ -39,46 +39,46 @@ func loadTemplates() {
 
 	layoutFiles, err := filepath.Glob(templateConfig.TemplateLayoutPath + "*.gohtml")
 	if err != nil {
-		log.Fatalln("models.loadTemplates > error:", err)
+		log.Fatalln("tpl.loadTemplates > get layoutFiles error:", err)
 	}
 
 	includeFiles, err := filepath.Glob(templateConfig.TemplateIncludePath + "*.gohtml")
 	if err != nil {
-		log.Fatalln("models.loadTemplates > error:", err)
+		log.Fatalln("tpl.loadTemplates > get includeFiles error:", err)
 	}
 
 	mainTemplate := template.New("main")
-	mainTemplate, err = mainTemplate.Parse(mainTmpl)
-	if err != nil {
-		log.Fatalln("models.loadTemplates > error:", err)
+	if mainTemplate, err = mainTemplate.Parse(mainTmpl); err != nil {
+		log.Fatalln("tpl.loadTemplates > error:", err)
 	}
+
 	for _, file := range includeFiles {
 		fileName := filepath.Base(file)
 		files := append(layoutFiles, file)
 		templates[fileName], err = mainTemplate.Clone()
 		if err != nil {
-			log.Fatalln("models.loadTemplates > error:", err)
+			log.Fatalln("tpl.loadTemplates > error:", err)
 		}
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
 	}
 
-	log.Println("templates loading successful")
+	log.Println("tpl.loadTemplates > templates loading successful")
 	bufpool = bpool.NewBufferPool(64)
-	log.Println("buffer allocation successful")
+	log.Println("tpl.loadTemplates > buffer allocation successful")
 }
 
 // RenderTemplate gets the template, fills it with data and sends it to ResponseWriter
 func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	tmpl, ok := templates[name]
 	if !ok {
-		log.Fatalf("models.RenderTemplate > template %s does not exist", name)
+		log.Fatalf("tpl.RenderTemplate > template %s does not exist", name)
 	}
 
 	buf := bufpool.Get()
 	defer bufpool.Put(buf)
 
 	if err := tmpl.Execute(buf, data); err != nil {
-		log.Fatalln("models.RenderTemplate > cannot execute template", name)
+		log.Fatalln("tpl.RenderTemplate > cannot execute template", name)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/L-oris/mongoRestAPI/httperror"
-	"github.com/L-oris/mongoRestAPI/models"
 	"github.com/L-oris/mongoRestAPI/models/post"
+	"github.com/L-oris/mongoRestAPI/models/tpl"
 	"github.com/gorilla/mux"
 	"github.com/imdario/mergo"
 )
@@ -24,17 +24,17 @@ func NewBlogController() *BlogController {
 
 // Home serves the Home page
 func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
-	models.RenderTemplate(w, "home.gohtml", nil)
+	tpl.RenderTemplate(w, "home.gohtml", nil)
 }
 
 // GetAll gets all post.Post from the store
 func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
-	models.RenderTemplate(w, "all.gohtml", c.store)
+	tpl.RenderTemplate(w, "all.gohtml", c.store)
 }
 
 // New renders the template for adding new post.Post
 func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
-	models.RenderTemplate(w, "new.gohtml", c.store)
+	tpl.RenderTemplate(w, "new.gohtml", c.store)
 }
 
 // Add adds a post.Post to the store
@@ -51,7 +51,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 	}
 
 	c.store[newPost.ID] = newPost
-	models.RenderTemplate(w, "byID.gohtml", newPost)
+	tpl.RenderTemplate(w, "byID.gohtml", newPost)
 }
 
 // GetByID gets a post.Post by ID from store
@@ -65,7 +65,7 @@ func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	models.RenderTemplate(w, "byID.gohtml", fPost)
+	tpl.RenderTemplate(w, "byID.gohtml", fPost)
 }
 
 // UpdateByID accepts a partial post.Post and update its fields
