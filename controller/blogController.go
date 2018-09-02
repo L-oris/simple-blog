@@ -44,7 +44,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
 	}
-	newPost, err := post.GeneratePost(partialPost)
+	newPost, err := post.GenerateFromPartial(partialPost)
 	if err != nil {
 		httperror.BadRequest(w, "Invalid data provided")
 		return

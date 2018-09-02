@@ -19,9 +19,9 @@ type Post struct {
 // EmptyPost is used for comparing empty Post values
 var EmptyPost = Post{}
 
-// IsValidPost validates Post coming from client
-func IsValidPost(p Post) bool {
-	if p.ID == "" || p.Title == "" {
+// HasTitleAndContent checks for 'Title' and 'Content' fields not to be empty
+func (p Post) HasTitleAndContent() bool {
+	if p.Title == "" || p.Content == "" {
 		return false
 	}
 	return true
@@ -39,7 +39,12 @@ func FromJSON(jsonPost []byte) (Post, error) {
 	return newPost, nil
 }
 
-func GeneratePost(partialPost Post) (Post, error) {
+// GenerateFromPartial generates a new Post from a set of partial fields
+func GenerateFromPartial(partialPost Post) (Post, error) {
+	if !partialPost.HasTitleAndContent() {
+		return Post{}, errors.New("post.GenerateFromPartial > invalid Post provided")
+	}
+
 	partialPost.ID = uuid.Must(uuid.NewV4(), nil).String()
 	partialPost.CreatedAt = time.Now()
 
