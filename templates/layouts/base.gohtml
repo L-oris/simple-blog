@@ -1,13 +1,14 @@
 {{ define "base" }}
 <html>
 <head>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <title>{{block "title" .}} {{end}}</title>
     {{block "style" .}} {{end}}
     {{template "cdn"}}
 </head>
 <body>
     <body>
-        {{block "header" .}}{{end}}
+        {{block "header" .}} {{end}}
 
         {{template "content" .}}
     </body>

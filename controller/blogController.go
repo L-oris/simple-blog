@@ -110,6 +110,10 @@ func (c BlogController) RouteNotFound(w http.ResponseWriter, req *http.Request) 
 	httperror.NotFound(w, "Route Not Found")
 }
 
+func (c BlogController) Favicon(w http.ResponseWriter, req *http.Request) {
+	http.ServeFile(w, req, "public/favicon.ico")
+}
+
 // LoggingMiddleware logs all incoming requests
 // TODO: move to separate controller
 func (c BlogController) LoggingMiddleware(next http.Handler) http.Handler {
