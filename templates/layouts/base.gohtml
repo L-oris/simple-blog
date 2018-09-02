@@ -1,0 +1,17 @@
+{{ define "base" }}
+<html>
+<head>
+    <title>{{block "title" .}} {{end}}</title>
+    {{block "style" .}} {{end}}
+</head>
+<body>
+    <body>
+        {{block "header" .}}{{end}}
+
+        {{template "content" .}}
+    </body>
+    <footer>{{block "footer" .}} {{end}}</footer>
+    {{block "script" .}} {{end}}
+</body>
+</html>
+{{ end }}
