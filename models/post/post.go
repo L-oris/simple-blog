@@ -16,17 +16,6 @@ type Post struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-// EmptyPost is used for comparing empty Post values
-var EmptyPost = Post{}
-
-// HasTitleAndContent checks for 'Title' and 'Content' fields not to be empty
-func (p Post) HasTitleAndContent() bool {
-	if p.Title == "" || p.Content == "" {
-		return false
-	}
-	return true
-}
-
 // FromJSON creates a Post out of JSON
 func FromJSON(jsonPost []byte) (Post, error) {
 	var newPost Post
@@ -49,4 +38,12 @@ func GenerateFromPartial(partialPost Post) (Post, error) {
 	partialPost.CreatedAt = time.Now()
 
 	return partialPost, nil
+}
+
+// HasTitleAndContent checks for 'Title' and 'Content' fields not to be empty
+func (p Post) HasTitleAndContent() bool {
+	if p.Title == "" || p.Content == "" {
+		return false
+	}
+	return true
 }
