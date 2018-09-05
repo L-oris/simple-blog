@@ -41,6 +41,14 @@
   revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
   version = "v1.2.0"
 
+[[projects]]
+  digest = "1:d688f4ad71b5dfad95c2d74cb0feac09f8f3c32ae5cecc078230dbdeece39e53"
+  name = "github.com/urfave/negroni"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c6a59be0ce122566695fbd5e48a77f8f10c8a63a"
+  version = "v1.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -49,6 +57,7 @@
     "github.com/imdario/mergo",
     "github.com/oxtoacart/bpool",
     "github.com/satori/go.uuid",
+    "github.com/urfave/negroni",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

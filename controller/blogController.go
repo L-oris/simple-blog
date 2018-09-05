@@ -12,13 +12,30 @@ import (
 )
 
 type BlogController struct {
-	store map[string]post.Post
+	store  map[string]post.Post
+	router *mux.Router
 }
 
-func NewBlogController() *BlogController {
-	return &BlogController{
-		store: make(map[string]post.Post),
+func NewBlogController(pathPrefix string) *mux.Router {
+	c := BlogController{
+		store:  make(map[string]post.Post),
+		router: mux.NewRouter(),
 	}
+
+	routes := c.router.PathPrefix(pathPrefix).Subrouter()
+	routes.Use(c.LoggingMiddleware)
+	routes.HandleFunc("/home", c.Home)
+	routes.HandleFunc("/", c.Home).Methods("GET")
+	routes.HandleFunc("/all", c.GetAll).Methods("GET")
+	routes.HandleFunc("/add", c.New).Methods("GET")
+	routes.HandleFunc("/post", c.Add).Methods("POST")
+	routes.HandleFunc("/post/{id}", c.GetByID).Methods("GET")
+	routes.HandleFunc("/post/{id}/edit", c.EditByID).Methods("GET")
+	routes.HandleFunc("/post/{id}/edit", c.UpdateByID).Methods("POST")
+	routes.HandleFunc("/post/{id}", c.DeleteByID).Methods("DELETE")
+	routes.HandleFunc("/favicon.ico", c.Favicon).Methods("GET")
+
+	return c.router
 }
 
 // Home serves the Home page
@@ -102,12 +119,6 @@ func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
 	postID := vars["id"]
 	delete(c.store, postID)
 	w.Write([]byte("OK"))
-}
-
-// RouteNotFound handles requests to routes not implemented
-// TODO: move to separate controller
-func (c BlogController) RouteNotFound(w http.ResponseWriter, req *http.Request) {
-	httperror.NotFound(w, "Route Not Found")
 }
 
 func (c BlogController) Favicon(w http.ResponseWriter, req *http.Request) {

@@ -6,24 +6,22 @@ import (
 	"time"
 
 	"github.com/L-oris/yabb/controller"
+	"github.com/L-oris/yabb/httperror"
 	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 )
 
 func main() {
-	blogController := controller.NewBlogController()
 	router := mux.NewRouter()
-	router.Use(blogController.LoggingMiddleware)
-	router.HandleFunc("/", blogController.Home).Methods("GET")
-	router.HandleFunc("/posts", blogController.GetAll).Methods("GET")
-	router.HandleFunc("/add", blogController.New).Methods("GET")
-	router.HandleFunc("/post", blogController.Add).Methods("POST")
-	router.HandleFunc("/post/{id}", blogController.GetByID).Methods("GET")
-	router.HandleFunc("/post/{id}/edit", blogController.EditByID).Methods("GET")
-	router.HandleFunc("/post/{id}/edit", blogController.UpdateByID).Methods("POST")
-	router.HandleFunc("/post/{id}", blogController.DeleteByID).Methods("DELETE")
-	router.HandleFunc("/favicon.ico", blogController.Favicon).Methods("GET")
 
-	router.NotFoundHandler = http.HandlerFunc(blogController.RouteNotFound)
+	router.PathPrefix("/post").Handler(negroni.New(
+		negroni.Wrap(controller.NewBlogController("/post")),
+	))
+
+	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		httperror.NotFound(w, "Route Not Found")
+	})
+
 	server := &http.Server{
 		Addr:         "0.0.0.0:8080",
 		Handler:      router,
