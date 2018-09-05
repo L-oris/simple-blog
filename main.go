@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/L-oris/yabb/controller"
+	"github.com/L-oris/yabb/controller/postcontroller"
 	"github.com/L-oris/yabb/httperror"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -16,8 +16,8 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.PathPrefix("/posts").Handler(negroni.New(
-		negroni.Wrap(controller.NewBlogController("/posts")),
+	router.PathPrefix("/post").Handler(negroni.New(
+		negroni.Wrap(postcontroller.New("/post")),
 	))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

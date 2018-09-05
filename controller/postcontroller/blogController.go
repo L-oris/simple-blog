@@ -1,4 +1,4 @@
-package controller
+package postcontroller
 
 import (
 	"log"
@@ -16,7 +16,7 @@ type BlogController struct {
 	router *mux.Router
 }
 
-func NewBlogController(pathPrefix string) *mux.Router {
+func New(pathPrefix string) *mux.Router {
 	c := BlogController{
 		store:  make(map[string]post.Post),
 		router: mux.NewRouter(),
