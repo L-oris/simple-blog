@@ -23,38 +23,37 @@ func NewBlogController(pathPrefix string) *mux.Router {
 	}
 
 	routes := c.router.PathPrefix(pathPrefix).Subrouter()
-	routes.Use(c.LoggingMiddleware)
-	routes.HandleFunc("/home", c.Home)
-	routes.HandleFunc("/", c.Home).Methods("GET")
-	routes.HandleFunc("/all", c.GetAll).Methods("GET")
-	routes.HandleFunc("/add", c.New).Methods("GET")
-	routes.HandleFunc("/post", c.Add).Methods("POST")
-	routes.HandleFunc("/post/{id}", c.GetByID).Methods("GET")
-	routes.HandleFunc("/post/{id}/edit", c.EditByID).Methods("GET")
-	routes.HandleFunc("/post/{id}/edit", c.UpdateByID).Methods("POST")
-	routes.HandleFunc("/post/{id}", c.DeleteByID).Methods("DELETE")
-	routes.HandleFunc("/favicon.ico", c.Favicon).Methods("GET")
+	routes.Use(c.loggingMiddleware)
+	routes.HandleFunc("/", c.home).Methods("GET")
+	routes.HandleFunc("/all", c.getAll).Methods("GET")
+	routes.HandleFunc("/add", c.new).Methods("GET")
+	routes.HandleFunc("/post", c.add).Methods("POST")
+	routes.HandleFunc("/post/{id}", c.getByID).Methods("GET")
+	routes.HandleFunc("/post/{id}/edit", c.editByID).Methods("GET")
+	routes.HandleFunc("/post/{id}/edit", c.updateByID).Methods("POST")
+	routes.HandleFunc("/post/{id}", c.deleteByID).Methods("DELETE")
+	routes.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 
 	return c.router
 }
 
 // Home serves the Home page
-func (c BlogController) Home(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) home(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "home.gohtml", nil)
 }
 
 // GetAll gets all Post from the store
-func (c BlogController) GetAll(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) getAll(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "all.gohtml", c.store)
 }
 
 // New renders the template for adding new Post
-func (c BlogController) New(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) new(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "new.gohtml", nil)
 }
 
 // Add adds a Post to the store
-func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) add(w http.ResponseWriter, req *http.Request) {
 	req.ParseForm()
 	partialPost := post.Post{
 		Title:   req.Form["title"][0],
@@ -71,7 +70,7 @@ func (c BlogController) Add(w http.ResponseWriter, req *http.Request) {
 }
 
 // GetByID gets a Post by ID from store
-func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) getByID(w http.ResponseWriter, req *http.Request) {
 	post, ok := c.getPostByIDFromStore(w, req)
 	if !ok {
 		return
@@ -79,7 +78,7 @@ func (c BlogController) GetByID(w http.ResponseWriter, req *http.Request) {
 	tpl.RenderTemplate(w, "byID.gohtml", post)
 }
 
-func (c BlogController) EditByID(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) editByID(w http.ResponseWriter, req *http.Request) {
 	post, ok := c.getPostByIDFromStore(w, req)
 	if !ok {
 		return
@@ -89,7 +88,7 @@ func (c BlogController) EditByID(w http.ResponseWriter, req *http.Request) {
 }
 
 // UpdateByID accepts a partial Post and update its fields
-func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) updateByID(w http.ResponseWriter, req *http.Request) {
 	storePost, ok := c.getPostByIDFromStore(w, req)
 	if !ok {
 		return
@@ -114,20 +113,20 @@ func (c BlogController) UpdateByID(w http.ResponseWriter, req *http.Request) {
 
 // DeleteByID deletes a Post by ID
 // It doesn't care if the Post exists or not
-func (c BlogController) DeleteByID(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) deleteByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	postID := vars["id"]
 	delete(c.store, postID)
 	w.Write([]byte("OK"))
 }
 
-func (c BlogController) Favicon(w http.ResponseWriter, req *http.Request) {
+func (c BlogController) favicon(w http.ResponseWriter, req *http.Request) {
 	http.ServeFile(w, req, "public/favicon.ico")
 }
 
 // LoggingMiddleware logs all incoming requests
 // TODO: move to separate controller
-func (c BlogController) LoggingMiddleware(next http.Handler) http.Handler {
+func (c BlogController) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		log.Println("controller.LoggingMiddleware:", req.Method, req.RequestURI)
 		next.ServeHTTP(w, req)

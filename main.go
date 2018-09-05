@@ -14,8 +14,8 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.PathPrefix("/post").Handler(negroni.New(
-		negroni.Wrap(controller.NewBlogController("/post")),
+	router.PathPrefix("/posts").Handler(negroni.New(
+		negroni.Wrap(controller.NewBlogController("/posts")),
 	))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
