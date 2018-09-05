@@ -23,7 +23,6 @@ func NewBlogController(pathPrefix string) *mux.Router {
 	}
 
 	routes := c.router.PathPrefix(pathPrefix).Subrouter()
-	routes.Use(c.loggingMiddleware)
 	routes.HandleFunc("/", c.home).Methods("GET")
 	routes.HandleFunc("/all", c.getAll).Methods("GET")
 	routes.HandleFunc("/add", c.new).Methods("GET")
@@ -122,13 +121,4 @@ func (c BlogController) deleteByID(w http.ResponseWriter, req *http.Request) {
 
 func (c BlogController) favicon(w http.ResponseWriter, req *http.Request) {
 	http.ServeFile(w, req, "public/favicon.ico")
-}
-
-// LoggingMiddleware logs all incoming requests
-// TODO: move to separate controller
-func (c BlogController) loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		log.Println("controller.LoggingMiddleware:", req.Method, req.RequestURI)
-		next.ServeHTTP(w, req)
-	})
 }
