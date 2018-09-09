@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 	"time"
+
+	"gotest.tools/assert"
 )
 
 var postOnlyTitle = Post{
@@ -24,51 +26,35 @@ var postComplete = Post{
 }
 
 func TestHasTitleAndContent(t *testing.T) {
-	if postOnlyTitle.HasTitleAndContent() == true {
-		t.Error("Expected missing 'Title' to be found")
-	}
-
-	if postOnlyContent.HasTitleAndContent() == true {
-		t.Error("Expected missing 'Content' to be found")
-	}
-
-	if postWithTitleAndContent.HasTitleAndContent() == false {
-		t.Error("Expected Post with 'Title' and 'Content' to be valid")
-	}
+	assert.Equal(t, postOnlyTitle.HasTitleAndContent(), false, "should catch if post is missing title")
+	assert.Equal(t, postOnlyContent.HasTitleAndContent(), false, "should catch if post is missing content")
+	assert.Equal(t, postWithTitleAndContent.HasTitleAndContent(), true, "should allow post with title and content")
 }
 
 func TestGenerateFromPartial(t *testing.T) {
 	_, err := GenerateFromPartial(postOnlyTitle)
 	if err == nil {
-		t.Error("Expected to throw if Post is missing required fields")
+		t.Error("should throw if post is missing required fields")
 	}
 
 	result, _ := GenerateFromPartial(postWithTitleAndContent)
-	if result.ID == "" {
-		t.Error("Expected ID to be generated for new Post")
-	}
+	assert.Check(t, result.ID != "", "should generate new ID if provided post does not have one")
 
 	result, _ = GenerateFromPartial(postComplete)
-	if result.ID == postComplete.ID {
-		t.Error("Expected new ID to replace old one")
-	}
+	assert.Equal(t, result.ID, postComplete.ID, "should not replace original ID if is not zero value")
 
 	result, _ = GenerateFromPartial(postWithTitleAndContent)
-	if result.CreatedAt == postWithTitleAndContent.CreatedAt {
-		t.Error("Expected Date to be generated for new Post")
-	}
+	assert.Check(t, result.CreatedAt != postWithTitleAndContent.CreatedAt, "should generate new date if provided post does not have one")
 
 	result, _ = GenerateFromPartial(postComplete)
-	if result.CreatedAt == postComplete.CreatedAt {
-		t.Error("Expected current Date to replace old one")
-	}
+	assert.Equal(t, result.CreatedAt, postComplete.CreatedAt, "should not replace original date if is not zero value")
 }
 
 func TestFromJSON(t *testing.T) {
 	badJSON := []byte{1, 2, 3}
 	_, err := FromJSON(badJSON)
 	if err == nil {
-		t.Error("Expected bad JSON to be catched")
+		t.Error("expected bad JSON to be catched")
 	}
 
 	badPost := struct {
@@ -79,22 +65,38 @@ func TestFromJSON(t *testing.T) {
 	badPostJSON, _ := json.Marshal(badPost)
 	_, err = FromJSON(badPostJSON)
 	if err == nil {
-		t.Error("Expected bad JSON to be catched")
+		t.Error("expected bad JSON to be catched")
 	}
 
 	postCompleteJSON, _ := json.Marshal(postComplete)
 	_, err = FromJSON(postCompleteJSON)
 	if err != nil {
-		t.Error("Expected good JSON to be valid")
+		t.Error("expected good JSON to be valid")
 	}
 }
 
 func TestIsValid(t *testing.T) {
-	if IsValid(postOnlyTitle) == true {
-		t.Error("Expected Post with empty fields to be catched")
-	}
+	assert.Equal(t, IsValid(postOnlyTitle), false, "should catch post with empty fields")
+	assert.Equal(t, IsValid(postComplete), true, "should allow complete post")
+}
 
-	if IsValid(postComplete) == false {
-		t.Error("Expected Post to be valid")
-	}
+func TestSafeEqual(t *testing.T) {
+	postA := Post{ID: "123"}
+	postB := Post{ID: "456"}
+	assert.Check(t, !SafeEqual(postA, postB), "should catch post with different ID")
+
+	postA = Post{Title: "postA"}
+	postB = Post{Title: "postB"}
+	assert.Check(t, !SafeEqual(postA, postB), "should catch post with different Title")
+
+	postA = Post{Content: "postA"}
+	postB = Post{Content: "postB"}
+	assert.Check(t, !SafeEqual(postA, postB), "should catch post with different Content")
+
+	assert.Check(t, SafeEqual(Post{}, Post{}), "should consider equal 2 empty posts")
+
+	postA, _ = GenerateFromPartial(postWithTitleAndContent)
+	postB, _ = GenerateFromPartial(postWithTitleAndContent)
+	postB.ID = postA.ID
+	assert.Check(t, SafeEqual(Post{}, Post{}), "should consider equal 2 posts generated over different time")
 }

@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/L-oris/yabb/controller/postcontroller"
+	"github.com/L-oris/yabb/controller/rootcontroller"
 	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/models/tpl"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
@@ -17,8 +19,17 @@ func main() {
 	router := mux.NewRouter()
 
 	router.PathPrefix("/post").Handler(negroni.New(
-		negroni.Wrap(postcontroller.New("/post")),
-	))
+		negroni.Wrap(postcontroller.New(&postcontroller.Config{
+			PathPrefix: "/post",
+			Tpl:        &tpl.TPL{},
+		}).Router)))
+
+	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
+		&rootcontroller.Config{
+			PathPrefix: "/",
+			Tpl:        &tpl.TPL{},
+			ServeFile:  http.ServeFile,
+		}).Router)))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")

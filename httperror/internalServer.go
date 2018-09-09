@@ -10,7 +10,7 @@ import (
 func InternalServer(w http.ResponseWriter, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json")
 	em := ErrorMessage{
-		Status:      500,
+		Status:      http.StatusBadRequest,
 		Message:     "Internal Server Error",
 		Description: errorMessage,
 	}

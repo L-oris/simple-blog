@@ -10,7 +10,7 @@ import (
 func BadRequest(w http.ResponseWriter, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json")
 	em := ErrorMessage{
-		Status:      400,
+		Status:      http.StatusBadRequest,
 		Message:     "Bad Request",
 		Description: errorMessage,
 	}

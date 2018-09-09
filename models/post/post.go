@@ -47,8 +47,14 @@ func GenerateFromPartial(partialPost Post) (Post, error) {
 		return Post{}, errors.New("post.GenerateFromPartial > invalid Post provided")
 	}
 
-	partialPost.ID = uuid.Must(uuid.NewV4(), nil).String()
-	partialPost.CreatedAt = time.Now()
+	if partialPost.ID == "" {
+		partialPost.ID = uuid.Must(uuid.NewV4(), nil).String()
+	}
+
+	timeZero := time.Time{}
+	if partialPost.CreatedAt == timeZero {
+		partialPost.CreatedAt = time.Now()
+	}
 
 	return partialPost, nil
 }
@@ -58,5 +64,15 @@ func (p Post) HasTitleAndContent() bool {
 	if p.Title == "" || p.Content == "" {
 		return false
 	}
+	return true
+}
+
+// SafeEqual compares 2 Post values to be equal
+// It excludes fields that are likely to be different over time, eg. CreatedAt
+func SafeEqual(postA, postB Post) bool {
+	if postA.ID != postB.ID || postA.Title != postB.Title || postA.Content != postB.Content {
+		return false
+	}
+
 	return true
 }
