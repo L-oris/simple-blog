@@ -29,3 +29,11 @@
 [[constraint]]
   name = "github.com/op/go-logging"
   version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/joho/godotenv"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/caarlos0/env"
+  version = "3.3.0"

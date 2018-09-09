@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:e361cb646a33874cf6521b5c4e77c9208b4b58c7fd3893b8c87f61f49b19d991"
+  name = "github.com/caarlos0/env"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1cddc31c48c56ecd700d873edb9fd5b6f5df922a"
+  version = "v3.3.0"
+
+[[projects]]
   digest = "1:bc38c7c481812e178d85160472e231c5e1c9a7f5845d67e23ee4e706933c10d8"
   name = "github.com/golang/mock"
   packages = ["gomock"]
@@ -53,6 +61,14 @@
   pruneopts = "UT"
   revision = "9f23e2d6bd2a77f959b2bf6acdbefd708a83a4a4"
   version = "v0.3.6"
+
+[[projects]]
+  digest = "1:70e697d67ccaec45e16bac3a32380ebcd9e7e071079c60d0171d42cf1cf9748a"
+  name = "github.com/joho/godotenv"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:5b3b29ce0e569f62935d9541dff2e16cc09df981ebde48e82259076a73a3d0c7"
@@ -120,10 +136,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/caarlos0/env",
     "github.com/golang/mock/gomock",
     "github.com/gorilla/handlers",
     "github.com/gorilla/mux",
     "github.com/imdario/mergo",
+    "github.com/joho/godotenv",
     "github.com/op/go-logging",
     "github.com/oxtoacart/bpool",
     "github.com/satori/go.uuid",
