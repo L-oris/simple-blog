@@ -55,6 +55,14 @@
   version = "v0.3.6"
 
 [[projects]]
+  digest = "1:5b3b29ce0e569f62935d9541dff2e16cc09df981ebde48e82259076a73a3d0c7"
+  name = "github.com/op/go-logging"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b2cb9fa56473e98db8caba80237377e83fe44db5"
+  version = "v1"
+
+[[projects]]
   branch = "master"
   digest = "1:df63a8ddf6fd32f2cdf09db1ada151c8a27f5fe2516ee977b72d6a0707e94910"
   name = "github.com/oxtoacart/bpool"
@@ -116,6 +124,7 @@
     "github.com/gorilla/handlers",
     "github.com/gorilla/mux",
     "github.com/imdario/mergo",
+    "github.com/op/go-logging",
     "github.com/oxtoacart/bpool",
     "github.com/satori/go.uuid",
     "github.com/urfave/negroni",

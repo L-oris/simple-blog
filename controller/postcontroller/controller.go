@@ -1,10 +1,10 @@
 package postcontroller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/gorilla/mux"
@@ -59,6 +59,7 @@ func (c postController) new(w http.ResponseWriter, req *http.Request) {
 func (c postController) add(w http.ResponseWriter, req *http.Request) {
 	partialPost, err := getPartialPostFromForm(req, true)
 	if err != nil {
+		logger.Log.Warning("incomplete post received")
 		httperror.BadRequest(w, err.Error())
 		return
 	}
@@ -98,12 +99,13 @@ func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
 
 	newPartialPost, err := getPartialPostFromForm(req, false)
 	if err != nil {
+		logger.Log.Warning("incomplete post received")
 		httperror.BadRequest(w, err.Error())
 		return
 	}
 
 	if err = mergo.Merge(&storePost, newPartialPost, mergo.WithOverride); err != nil {
-		log.Println("postcontroller.updateByID > failed to merge posts")
+		logger.Log.Error("failed to merge posts")
 		httperror.BadRequest(w, "Invalid post provided")
 		return
 	}

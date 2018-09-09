@@ -2,9 +2,9 @@ package tpl
 
 import (
 	"html/template"
-	"log"
 	"path/filepath"
 
+	"github.com/L-oris/yabb/logger"
 	"github.com/oxtoacart/bpool"
 )
 
@@ -34,18 +34,18 @@ func loadTemplates() {
 	}
 
 	layoutFiles, err := filepath.Glob(config.TemplateLayoutPath + "*.gohtml")
-	if err != nil {
-		log.Fatalln("tpl.loadTemplates > get layoutFiles error:", err)
+	if err != nil || len(layoutFiles) == 0 {
+		logger.Log.Fatal("get layoutFiles error: ", err)
 	}
 
 	includeFiles, err := filepath.Glob(config.TemplateIncludePath + "*.gohtml")
-	if err != nil {
-		log.Fatalln("tpl.loadTemplates > get includeFiles error:", err)
+	if err != nil || len(includeFiles) == 0 {
+		logger.Log.Fatal("get includeFiles error: ", err)
 	}
 
 	mainTemplate := template.New("main")
 	if mainTemplate, err = mainTemplate.Parse(mainTmpl); err != nil {
-		log.Fatalln("tpl.loadTemplates > error:", err)
+		logger.Log.Fatal("parse error: ", err)
 	}
 
 	for _, file := range includeFiles {
@@ -53,12 +53,12 @@ func loadTemplates() {
 		files := append(layoutFiles, file)
 		templates[fileName], err = mainTemplate.Clone()
 		if err != nil {
-			log.Fatalln("tpl.loadTemplates > error:", err)
+			logger.Log.Fatal("clone error: ", err)
 		}
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
 	}
 
-	log.Println("tpl.loadTemplates > templates loading successful")
+	logger.Log.Debug("templates loading successful")
 	bufpool = bpool.NewBufferPool(64)
-	log.Println("tpl.loadTemplates > buffer allocation successful")
+	logger.Log.Debug("buffer allocation successful")
 }

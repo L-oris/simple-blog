@@ -3,6 +3,7 @@ package rootcontroller
 import (
 	"net/http"
 
+	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/gorilla/mux"
 )
@@ -43,6 +44,7 @@ func (c rootController) home(w http.ResponseWriter, req *http.Request) {
 
 // ping is used for health check
 func (c rootController) ping(w http.ResponseWriter, req *http.Request) {
+	logger.Log.Debug("ping pong request")
 	w.Write([]byte("pong"))
 }
 
