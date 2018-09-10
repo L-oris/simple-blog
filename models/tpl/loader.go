@@ -34,12 +34,12 @@ func loadTemplates() {
 	}
 
 	layoutFiles, err := filepath.Glob(config.TemplateLayoutPath + "*.gohtml")
-	if err != nil || len(layoutFiles) == 0 {
+	if err != nil {
 		logger.Log.Fatal("get layoutFiles error: ", err)
 	}
 
 	includeFiles, err := filepath.Glob(config.TemplateIncludePath + "*.gohtml")
-	if err != nil || len(includeFiles) == 0 {
+	if err != nil {
 		logger.Log.Fatal("get includeFiles error: ", err)
 	}
 

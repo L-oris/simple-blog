@@ -1,4 +1,8 @@
 .env
 vendor/
+
+# vs code extension
+debug
+
 # binary name
 mongoRestAPI 
