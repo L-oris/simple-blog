@@ -1,6 +1,7 @@
 package rootcontroller
 
 import (
+	"flag"
 	"net/http"
 
 	"github.com/L-oris/yabb/logger"
@@ -28,6 +29,8 @@ func New(config *Config) rootController {
 	}
 
 	router := mux.NewRouter()
+	router.PathPrefix("/static/").Handler(c.static())
+
 	routes := router.PathPrefix(config.PathPrefix).Subrouter()
 	routes.HandleFunc("/", c.home).Methods("GET")
 	routes.HandleFunc("/ping", c.ping).Methods("GET")
@@ -35,6 +38,15 @@ func New(config *Config) rootController {
 
 	c.Router = router
 	return c
+}
+
+// static serves static files
+func (c rootController) static() http.Handler {
+	var dir string
+	flag.StringVar(&dir, "dir", "public/", "the directory to serve files from /public")
+	flag.Parse()
+
+	return http.StripPrefix("/static/", http.FileServer(http.Dir(dir)))
 }
 
 // home serves the Home page
