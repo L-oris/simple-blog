@@ -12,7 +12,7 @@ var BlogDB *sql.DB
 
 func init() {
 	var err error
-	BlogDB, err = sql.Open("mysql", "root:password@/loris")
+	BlogDB, err = sql.Open("mysql", "root:password@/loris?parseTime=true")
 	if err != nil {
 		logger.Log.Fatal("db connection error: ", err)
 	}

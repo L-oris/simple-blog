@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/L-oris/yabb/models/db"
+	"github.com/L-oris/yabb/repository/postrepository"
 
 	"github.com/L-oris/yabb/controller/postcontroller"
 	"github.com/L-oris/yabb/controller/rootcontroller"
@@ -24,6 +25,7 @@ func main() {
 	router.PathPrefix("/post").Handler(negroni.New(
 		negroni.Wrap(postcontroller.New(&postcontroller.Config{
 			PathPrefix: "/post",
+			Repository: postrepository.New(),
 			Tpl:        &tpl.TPL{},
 		}).Router)))
 
