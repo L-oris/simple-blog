@@ -2,7 +2,12 @@ package rootcontroller
 
 import (
 	"flag"
+	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/models/db"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
@@ -34,6 +39,7 @@ func New(config *Config) rootController {
 	routes := router.PathPrefix(config.PathPrefix).Subrouter()
 	routes.HandleFunc("/", c.home).Methods("GET")
 	routes.HandleFunc("/ping", c.ping).Methods("GET")
+	routes.HandleFunc("/pingDB", c.pingDB).Methods("GET")
 	routes.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 
 	c.Router = router
@@ -57,6 +63,34 @@ func (c rootController) home(w http.ResponseWriter, req *http.Request) {
 // ping is used for health check
 func (c rootController) ping(w http.ResponseWriter, req *http.Request) {
 	logger.Log.Debug("ping pong request")
+	w.Write([]byte("pong"))
+}
+
+func (c rootController) pingDB(w http.ResponseWriter, req *http.Request) {
+	if err := db.BlogDB.Ping(); err != nil {
+		httperror.InternalServer(w, "cannot connect to BlogDB database")
+	}
+
+	w.Write([]byte("OK"))
+}
+
+// ping is used for db health check
+func (c rootController) pingDBQuery(w http.ResponseWriter, req *http.Request) {
+	rows, err := db.BlogDB.Query("SELECT aName FROM amigos;")
+	if err != nil {
+		fmt.Println("cannot execute query", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(name + "\n")
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
 	w.Write([]byte("pong"))
 }
 

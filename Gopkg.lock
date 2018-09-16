@@ -10,6 +10,14 @@
   version = "v3.3.0"
 
 [[projects]]
+  digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d523deb1b23d913de5bdada721a6071e71283618"
+  version = "v1.4.0"
+
+[[projects]]
   digest = "1:bc38c7c481812e178d85160472e231c5e1c9a7f5845d67e23ee4e706933c10d8"
   name = "github.com/golang/mock"
   packages = ["gomock"]
@@ -119,6 +127,14 @@
   revision = "161cd47e91fd58ac17490ef4d742dc98bb4cf60e"
 
 [[projects]]
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  pruneopts = "UT"
+  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
+  version = "v1.1.0"
+
+[[projects]]
   digest = "1:225f565dc88a02cebe329d3a49d0ca125789091af952a5cc4fde6312c34ce44d"
   name = "gotest.tools"
   packages = [
@@ -137,6 +153,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/caarlos0/env",
+    "github.com/go-sql-driver/mysql",
     "github.com/golang/mock/gomock",
     "github.com/gorilla/handlers",
     "github.com/gorilla/mux",
