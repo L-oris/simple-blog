@@ -140,9 +140,17 @@ func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
 }
 
 // deleteByID deletes a Post by ID
-// It doesn't care if the Post exists or not
 func (c postController) deleteByID(w http.ResponseWriter, req *http.Request) {
-	postID := mux.Vars(req)["id"]
-	delete(c.store, postID)
+	vars := mux.Vars(req)
+	pID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		httperror.BadRequest(w, "bad id provided: "+string(pID))
+	}
+
+	if err = c.repository.DeleteByID(pID); err != nil {
+		httperror.BadRequest(w, "cannot delete post "+string(pID))
+		return
+	}
+
 	w.Write([]byte("OK"))
 }

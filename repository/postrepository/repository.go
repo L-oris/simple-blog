@@ -77,6 +77,7 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 	return r.GetByID(int(lastInsertID))
 }
 
+// UpdateByID updates only provided fields in existing DB Post
 func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error) {
 	dbPost, err := r.GetByID(id)
 	if err != nil {
@@ -90,7 +91,30 @@ func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error)
 	}
 
 	sqlStatement := `UPDATE Posts SET Title=?, Content=? WHERE ID=?`
-	r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.ID)
+	_, err = r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.ID)
+	if err != nil {
+		logger.Log.Error("cannot update post: ", err.Error())
+		return post.Post{}, nil
+	}
 
 	return r.GetByID(id)
+}
+
+// DeleteByID deletes post by ID
+// Returns an error if Post is not found
+func (r Repository) DeleteByID(id int) error {
+	_, err := r.GetByID(id)
+	if err != nil {
+		logger.Log.Warning("post ", string(id), "not found")
+		return err
+	}
+
+	sqlStatement := `DELETE FROM Posts WHERE ID=?`
+	_, err = r.DB.Exec(sqlStatement, id)
+	if err != nil {
+		logger.Log.Error("cannot delete post: ", err.Error())
+		return err
+	}
+
+	return nil
 }
