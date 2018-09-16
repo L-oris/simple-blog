@@ -6,14 +6,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/L-oris/yabb/models/db"
-	"github.com/L-oris/yabb/repository/postrepository"
-
 	"github.com/L-oris/yabb/controller/postcontroller"
 	"github.com/L-oris/yabb/controller/rootcontroller"
 	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/models/env"
 	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
@@ -31,7 +29,6 @@ func main() {
 
 	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
 		&rootcontroller.Config{
-			DB:         db.BlogDB,
 			PathPrefix: "/",
 			Tpl:        &tpl.TPL{},
 			ServeFile:  http.ServeFile,

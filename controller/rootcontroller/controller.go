@@ -1,7 +1,6 @@
 package rootcontroller
 
 import (
-	"database/sql"
 	"flag"
 	"net/http"
 
@@ -11,7 +10,6 @@ import (
 )
 
 type Config struct {
-	DB         *sql.DB
 	PathPrefix string
 	Tpl        tpl.Template
 	ServeFile  serveFile
@@ -19,7 +17,6 @@ type Config struct {
 
 type rootController struct {
 	Router *mux.Router
-	db     *sql.DB
 	serveFile
 	tpl tpl.Template
 }
@@ -27,7 +24,6 @@ type rootController struct {
 // New creates a new controller and registers the routes
 func New(config *Config) rootController {
 	c := rootController{
-		db:        config.DB,
 		serveFile: config.ServeFile,
 		tpl:       config.Tpl,
 	}
