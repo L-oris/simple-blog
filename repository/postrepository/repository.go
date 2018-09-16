@@ -29,7 +29,7 @@ func (r Repository) GetAll() ([]post.Post, error) {
 	rows, err := r.DB.Query("SELECT * FROM Posts;")
 	if err != nil {
 		logger.Log.Error("query error: ", err)
-		return make([]post.Post, 0), err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -42,9 +42,22 @@ func (r Repository) GetAll() ([]post.Post, error) {
 		}
 		result = append(result, post)
 	}
+
 	if err := rows.Err(); err != nil {
-		logger.Log.Error("rows error: ", err)
+		logger.Log.Error("iteration error: ", err)
 		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r Repository) GetByID(id int) (post.Post, error) {
+	row := r.DB.QueryRow("SELECT * FROM Posts WHERE ID=?;", id)
+
+	result := post.Post{}
+	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.CreatedAt); err != nil {
+		logger.Log.Warning("scan error: ", err)
+		return post.Post{}, err
 	}
 
 	return result, nil

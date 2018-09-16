@@ -2,6 +2,7 @@ package postcontroller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/logger"
@@ -88,11 +89,17 @@ func (c postController) add(w http.ResponseWriter, req *http.Request) {
 
 // getByID gets a Post by ID from store
 func (c postController) getByID(w http.ResponseWriter, req *http.Request) {
-	post, ok := c.getPostByIDFromStore(w, req)
-	if !ok {
-		httperror.NotFound(w, "Post not found")
-		return
+	vars := mux.Vars(req)
+	pID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
+
+	post, err := c.repository.GetByID(pID)
+	if err != nil {
+		httperror.NotFound(w, "Post "+string(pID)+" not found")
+	}
+
 	c.tpl.Render(w, "byID.gohtml", post)
 }
 
