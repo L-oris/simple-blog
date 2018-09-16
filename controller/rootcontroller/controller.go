@@ -1,13 +1,13 @@
 package rootcontroller
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/L-oris/yabb/httperror"
-	"github.com/L-oris/yabb/models/db"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
@@ -15,22 +15,25 @@ import (
 )
 
 type Config struct {
+	DB         *sql.DB
 	PathPrefix string
 	Tpl        tpl.Template
 	ServeFile  serveFile
 }
 
 type rootController struct {
-	tpl tpl.Template
-	serveFile
 	Router *mux.Router
+	db     *sql.DB
+	serveFile
+	tpl tpl.Template
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) rootController {
 	c := rootController{
-		tpl:       config.Tpl,
+		db:        config.DB,
 		serveFile: config.ServeFile,
+		tpl:       config.Tpl,
 	}
 
 	router := mux.NewRouter()
@@ -39,7 +42,7 @@ func New(config *Config) rootController {
 	routes := router.PathPrefix(config.PathPrefix).Subrouter()
 	routes.HandleFunc("/", c.home).Methods("GET")
 	routes.HandleFunc("/ping", c.ping).Methods("GET")
-	routes.HandleFunc("/pingDB", c.pingDB).Methods("GET")
+	routes.HandleFunc("/pingDB", c.pingDBQuery).Methods("GET")
 	routes.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 
 	c.Router = router
@@ -67,7 +70,7 @@ func (c rootController) ping(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c rootController) pingDB(w http.ResponseWriter, req *http.Request) {
-	if err := db.BlogDB.Ping(); err != nil {
+	if err := c.db.Ping(); err != nil {
 		httperror.InternalServer(w, "cannot connect to BlogDB database")
 	}
 
@@ -76,7 +79,7 @@ func (c rootController) pingDB(w http.ResponseWriter, req *http.Request) {
 
 // ping is used for db health check
 func (c rootController) pingDBQuery(w http.ResponseWriter, req *http.Request) {
-	rows, err := db.BlogDB.Query("SELECT aName FROM amigos;")
+	rows, err := c.db.Query("SELECT aName FROM amigos;")
 	if err != nil {
 		fmt.Println("cannot execute query", err)
 	}

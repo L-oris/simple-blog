@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/L-oris/yabb/models/db"
+
 	"github.com/L-oris/yabb/controller/postcontroller"
 	"github.com/L-oris/yabb/controller/rootcontroller"
 	"github.com/L-oris/yabb/httperror"
@@ -27,6 +29,7 @@ func main() {
 
 	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
 		&rootcontroller.Config{
+			DB:         db.BlogDB,
 			PathPrefix: "/",
 			Tpl:        &tpl.TPL{},
 			ServeFile:  http.ServeFile,
