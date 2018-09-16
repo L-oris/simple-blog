@@ -10,7 +10,6 @@ import (
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/gorilla/mux"
-	"github.com/imdario/mergo"
 )
 
 type Config struct {
@@ -108,10 +107,15 @@ func (c postController) getByID(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c postController) editByID(w http.ResponseWriter, req *http.Request) {
-	post, ok := c.getPostByIDFromStore(w, req)
-	if !ok {
-		httperror.NotFound(w, "Post not found")
-		return
+	vars := mux.Vars(req)
+	pID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		httperror.BadRequest(w, "bad id provided: "+string(pID))
+	}
+
+	post, err := c.repository.GetByID(pID)
+	if err != nil {
+		httperror.NotFound(w, "Post "+string(pID)+" not found")
 	}
 
 	c.tpl.Render(w, "edit.gohtml", post)
@@ -119,27 +123,20 @@ func (c postController) editByID(w http.ResponseWriter, req *http.Request) {
 
 // updateByID accepts a partial Post and update its fields
 func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
-	storePost, ok := c.getPostByIDFromStore(w, req)
-	if !ok {
-		httperror.NotFound(w, "Post not found")
-		return
-	}
-
-	newPartialPost, err := getPartialPostFromForm(req, false)
+	vars := mux.Vars(req)
+	pID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		logger.Log.Warning("incomplete post received")
-		httperror.BadRequest(w, err.Error())
+		httperror.BadRequest(w, "bad id provided: "+string(pID))
+	}
+
+	partialPost, err := getPartialPostFromForm(req, false)
+	if err != nil {
+		httperror.BadRequest(w, "invalid data provided")
 		return
 	}
 
-	if err = mergo.Merge(&storePost, newPartialPost, mergo.WithOverride); err != nil {
-		logger.Log.Error("failed to merge posts")
-		httperror.BadRequest(w, "Invalid post provided")
-		return
-	}
-
-	c.store[storePost.ID] = storePost
-	c.tpl.Render(w, "byID.gohtml", storePost)
+	post, err := c.repository.UpdateByID(pID, partialPost)
+	c.tpl.Render(w, "byID.gohtml", post)
 }
 
 // deleteByID deletes a Post by ID

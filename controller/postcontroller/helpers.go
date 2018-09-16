@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/gorilla/mux"
 )
@@ -30,7 +31,8 @@ func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.
 	req.ParseForm()
 
 	if len(req.Form["title"]) == 0 || len(req.Form["content"]) == 0 {
-		return post.Post{}, errors.New("Invalid data provided")
+		logger.Log.Warning("invalid data provided")
+		return post.Post{}, errors.New("invalid data provided")
 	}
 
 	partialPost := post.Post{
@@ -39,7 +41,8 @@ func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.
 	}
 
 	if checkTitleAndContent && !partialPost.HasTitleAndContent() {
-		return post.Post{}, errors.New("Empty title or content provided")
+		logger.Log.Warning("post missing Title or Content")
+		return post.Post{}, errors.New("empty title or content provided")
 	}
 
 	return partialPost, nil

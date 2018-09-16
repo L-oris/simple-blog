@@ -6,6 +6,7 @@ import (
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/db"
 	"github.com/L-oris/yabb/models/post"
+	"github.com/imdario/mergo"
 )
 
 type Repository struct {
@@ -37,7 +38,7 @@ func (r Repository) GetAll() ([]post.Post, error) {
 	for rows.Next() {
 		post := post.Post{}
 		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.CreatedAt); err != nil {
-			logger.Log.Error("scan error: ", err)
+			logger.Log.Error("scan error: ", err.Error())
 			return nil, err
 		}
 		result = append(result, post)
@@ -54,7 +55,7 @@ func (r Repository) GetByID(id int) (post.Post, error) {
 
 	result := post.Post{}
 	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.CreatedAt); err != nil {
-		logger.Log.Warning("scan error: ", err)
+		logger.Log.Warning("scan error: ", err.Error())
 		return post.Post{}, err
 	}
 
@@ -68,10 +69,28 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 	sqlStatement := `INSERT INTO Posts (Title, Content) VALUES (?, ?);`
 	queryReturn, err := r.DB.Exec(sqlStatement, partialPost.Title, partialPost.Content)
 	if err != nil {
-		logger.Log.Warning("insert error: ", err)
+		logger.Log.Warning("insert error: ", err.Error())
 		return post.Post{}, err
 	}
 
 	lastInsertID, _ := queryReturn.LastInsertId()
 	return r.GetByID(int(lastInsertID))
+}
+
+func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error) {
+	dbPost, err := r.GetByID(id)
+	if err != nil {
+		logger.Log.Warning("post ", string(id), "not found")
+		return post.Post{}, nil
+	}
+
+	if err = mergo.Merge(&dbPost, partialPost, mergo.WithOverride); err != nil {
+		logger.Log.Error("failed to merge posts: ", err.Error())
+		return post.Post{}, err
+	}
+
+	sqlStatement := `UPDATE Posts SET Title=?, Content=? WHERE ID=?`
+	r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.ID)
+
+	return r.GetByID(id)
 }
