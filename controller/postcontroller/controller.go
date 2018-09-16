@@ -55,7 +55,7 @@ func (c postController) ping(w http.ResponseWriter, req *http.Request) {
 		httperror.InternalServer(w, "db not connected")
 		return
 	}
-	w.Write([]byte("OK"))
+	w.Write([]byte("pong"))
 }
 
 // getAll gets all Post from the store
