@@ -24,6 +24,8 @@ func (c postController) getPostByIDFromStore(w http.ResponseWriter, req *http.Re
 	return p, true
 }
 
+// getPartialPostFromForm parses request form and returns a post with Title & Content (other values are zeroed)
+// 'checkTitleAndContent' defines whether title & content should be mandatory
 func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.Post, error) {
 	req.ParseForm()
 

@@ -68,7 +68,7 @@ func (c postController) getAll(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "all.gohtml", posts)
 }
 
-// new renders the template for adding new Post
+// new renders template for adding new Post
 func (c postController) new(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "new.gohtml", nil)
 }
@@ -77,13 +77,17 @@ func (c postController) new(w http.ResponseWriter, req *http.Request) {
 func (c postController) add(w http.ResponseWriter, req *http.Request) {
 	partialPost, err := getPartialPostFromForm(req, true)
 	if err != nil {
-		logger.Log.Warning("incomplete post received")
-		httperror.BadRequest(w, err.Error())
+		logger.Log.Warning("incomplete post received: " + err.Error())
+		httperror.BadRequest(w, "incomplete post received")
 		return
 	}
 
-	newPost, _ := post.GenerateFromPartial(partialPost)
-	c.store[newPost.ID] = newPost
+	newPost, err := c.repository.Add(partialPost)
+	if err != nil {
+		httperror.InternalServer(w, "failed to add post")
+		return
+	}
+
 	c.tpl.Render(w, "byID.gohtml", newPost)
 }
 
