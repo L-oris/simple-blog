@@ -2,10 +2,8 @@ package postcontroller
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/L-oris/yabb/httperror"
-	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -38,18 +36,19 @@ func New(config *Config) postController {
 	router := mux.NewRouter()
 	routes := router.PathPrefix(config.PathPrefix).Subrouter()
 	routes.HandleFunc("/ping", c.ping).Methods("GET")
-	routes.HandleFunc("/all", c.getAll).Methods("GET")
-	routes.HandleFunc("/new", c.new).Methods("GET")
-	routes.HandleFunc("/new", c.add).Methods("POST")
-	routes.HandleFunc("/{id}", c.getByID).Methods("GET")
-	routes.HandleFunc("/{id}/edit", c.editByID).Methods("GET")
-	routes.HandleFunc("/{id}/edit", c.updateByID).Methods("POST")
+	routes.HandleFunc("/all", c.renderAll).Methods("GET")
+	routes.HandleFunc("/new", c.renderNew).Methods("GET")
+	routes.HandleFunc("/{id}", c.renderByID).Methods("GET")
+	routes.HandleFunc("/{id}/update", c.renderUpdateByID).Methods("GET")
+	routes.HandleFunc("/new", c.new).Methods("POST")
+	routes.HandleFunc("/{id}/update", c.updateByID).Methods("POST")
 	routes.HandleFunc("/{id}", c.deleteByID).Methods("DELETE")
 
 	c.Router = router
 	return c
 }
 
+// ping checks db connection
 func (c postController) ping(w http.ResponseWriter, req *http.Request) {
 	if err := c.repository.Ping(); err != nil {
 		httperror.InternalServer(w, "db not connected")
@@ -58,8 +57,7 @@ func (c postController) ping(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("pong"))
 }
 
-// getAll gets all Post from the store
-func (c postController) getAll(w http.ResponseWriter, req *http.Request) {
+func (c postController) renderAll(w http.ResponseWriter, req *http.Request) {
 	posts, err := c.repository.GetAll()
 	if err != nil {
 		httperror.BadRequest(w, "cannot get posts")
@@ -67,16 +65,13 @@ func (c postController) getAll(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "all.gohtml", posts)
 }
 
-// new renders template for adding new Post
-func (c postController) new(w http.ResponseWriter, req *http.Request) {
+func (c postController) renderNew(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "new.gohtml", nil)
 }
 
-// add adds a Post to the store
-func (c postController) add(w http.ResponseWriter, req *http.Request) {
+func (c postController) new(w http.ResponseWriter, req *http.Request) {
 	partialPost, err := getPartialPostFromForm(req, true)
 	if err != nil {
-		logger.Log.Warning("incomplete post received: " + err.Error())
 		httperror.BadRequest(w, "incomplete post received")
 		return
 	}
@@ -90,10 +85,8 @@ func (c postController) add(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "byID.gohtml", newPost)
 }
 
-// getByID gets a Post by ID from store
-func (c postController) getByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	pID, err := strconv.Atoi(vars["id"])
+func (c postController) renderByID(w http.ResponseWriter, req *http.Request) {
+	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
@@ -106,9 +99,8 @@ func (c postController) getByID(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "byID.gohtml", post)
 }
 
-func (c postController) editByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	pID, err := strconv.Atoi(vars["id"])
+func (c postController) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
+	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
@@ -121,10 +113,8 @@ func (c postController) editByID(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "edit.gohtml", post)
 }
 
-// updateByID accepts a partial Post and update its fields
 func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	pID, err := strconv.Atoi(vars["id"])
+	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
@@ -139,10 +129,8 @@ func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "byID.gohtml", post)
 }
 
-// deleteByID deletes a Post by ID
 func (c postController) deleteByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	pID, err := strconv.Atoi(vars["id"])
+	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}

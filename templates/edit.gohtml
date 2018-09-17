@@ -5,7 +5,7 @@
 {{define "content"}}
 <div>
     <h1>Finally editing post {{.Title}}</h1>
-    <form action="/post/{{.ID}}/edit" method="post">
+    <form action="/post/{{.ID}}/update" method="post">
         <h4>Title</h4>
         <input type="text" name="title" value="{{.Title}}">
         <h4>Content</h4>
