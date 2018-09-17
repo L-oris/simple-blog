@@ -8,6 +8,7 @@ import (
 
 type config struct {
 	Port string `env:"PORT" envDefault:"8080"`
+	DB   string `env:"DB,required"`
 }
 
 // Vars contains all the env variables in use for the project

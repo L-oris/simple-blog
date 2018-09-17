@@ -60,5 +60,5 @@ func loadTemplates() {
 
 	logger.Log.Debug("templates loading successful")
 	bufpool = bpool.NewBufferPool(64)
-	logger.Log.Debug("buffer allocation successful")
+	logger.Log.Debug("template buffer allocation successful")
 }

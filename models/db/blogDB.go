@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/L-oris/yabb/logger"
+	"github.com/L-oris/yabb/models/env"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -12,7 +13,7 @@ var BlogDB *sql.DB
 
 func init() {
 	var err error
-	BlogDB, err = sql.Open("mysql", "root:password@/loris?parseTime=true")
+	BlogDB, err = sql.Open("mysql", env.Vars.DB+"?parseTime=true")
 	if err != nil {
 		logger.Log.Fatal("db connection error: ", err)
 	}
