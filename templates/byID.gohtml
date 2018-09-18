@@ -9,31 +9,25 @@
     <h6>{{.CreatedAt.Format "02 Jan 2006, 15.04"}}</h6>
 
     <a href="/post/{{.ID}}/update" class="button">Edit</a>
-    <a id="delete-post" class="button">Delete</a>
+    <form action="/post/{{.ID}}/delete" method="post" class="inline">
+        <button type="submit" class="button">Delete</button>
+    </form>
 </div>
 {{end}}
 
 {{define "style"}}
 <style>
+    .inline {
+        display: inline;
+    }
+
     .button {
         border: 2px solid blue;
-        padding: 4px;
+        padding: 5px;
         color: blue;
         border-radius: 10px;
         text-decoration: none;
+        font-size: 16px;
     }
 </style>
-{{end}}
-
-{{define "script"}}
-<script>
-    $('#delete-post').click(() => {
-        $.ajax({
-            type: 'DELETE',
-            url: '/post/{{.ID}}'
-        }).done(() => {
-            window.location.href = '/post/all'
-        })
-    })
-</script>
 {{end}}

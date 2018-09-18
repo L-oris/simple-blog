@@ -42,7 +42,7 @@ func New(config *Config) postController {
 	routes.HandleFunc("/{id}/update", c.renderUpdateByID).Methods("GET")
 	routes.HandleFunc("/new", c.new).Methods("POST")
 	routes.HandleFunc("/{id}/update", c.updateByID).Methods("POST")
-	routes.HandleFunc("/{id}", c.deleteByID).Methods("DELETE")
+	routes.HandleFunc("/{id}/delete", c.deleteByID).Methods("POST")
 
 	c.Router = router
 	return c
@@ -82,7 +82,8 @@ func (c postController) new(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	c.tpl.Render(w, "byID.gohtml", newPost)
+	w.Header().Set("Location", "/post/"+newPost.ID)
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (c postController) renderByID(w http.ResponseWriter, req *http.Request) {
@@ -126,7 +127,9 @@ func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
 	}
 
 	post, err := c.repository.UpdateByID(pID, partialPost)
-	c.tpl.Render(w, "byID.gohtml", post)
+
+	w.Header().Set("Location", "/post/"+post.ID)
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (c postController) deleteByID(w http.ResponseWriter, req *http.Request) {
@@ -140,5 +143,6 @@ func (c postController) deleteByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Write([]byte("OK"))
+	w.Header().Set("Location", "/post/all")
+	w.WriteHeader(http.StatusSeeOther)
 }
