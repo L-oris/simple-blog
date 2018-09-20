@@ -32,7 +32,7 @@ func main() {
 		&rootcontroller.Config{
 			PathPrefix: "/",
 			Tpl:        inject.Container.Get("tpl").(*tpl.TPL),
-			ServeFile:  inject.Container.Get("fileserver").(func(w http.ResponseWriter, r *http.Request, fileName string)),
+			Serve:      inject.Container.Get("fileserver").(func(w http.ResponseWriter, r *http.Request, fileName string)),
 		}).Router)))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

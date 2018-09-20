@@ -12,20 +12,20 @@ import (
 type Config struct {
 	PathPrefix string
 	Tpl        tpl.Template
-	ServeFile  serveFile
+	Serve
 }
 
 type rootController struct {
 	Router *mux.Router
-	serveFile
-	tpl tpl.Template
+	serve  Serve
+	tpl    tpl.Template
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) rootController {
 	c := rootController{
-		serveFile: config.ServeFile,
-		tpl:       config.Tpl,
+		serve: config.Serve,
+		tpl:   config.Tpl,
 	}
 
 	router := mux.NewRouter()
@@ -61,5 +61,5 @@ func (c rootController) ping(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c rootController) favicon(w http.ResponseWriter, req *http.Request) {
-	c.serveFile(w, req, "public/favicon.ico")
+	c.serve(w, req, "public/favicon.ico")
 }
