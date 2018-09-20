@@ -9,8 +9,8 @@ import (
 
 	"github.com/L-oris/yabb/controller/postcontroller"
 	"github.com/L-oris/yabb/controller/rootcontroller"
-	"github.com/L-oris/yabb/di"
 	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/inject"
 	"github.com/L-oris/yabb/models/env"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -40,9 +40,7 @@ func main() {
 		httperror.NotFound(w, "Route Not Found")
 	})
 
-	builder := di.Create()
-	cnt := builder.Build()
-	obj := cnt.Get("my-object").(*struct{ Name string })
+	obj := inject.Container.Get("my-object").(*struct{ Name string })
 	fmt.Println(obj)
 
 	loggedRouter := handlers.LoggingHandler(os.Stdout, router)

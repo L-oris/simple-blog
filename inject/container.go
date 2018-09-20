@@ -1,8 +1,15 @@
-package di
+package inject
 
 import "github.com/sarulabs/di"
 
-func Create() *di.Builder {
+// Container stores all dependencies, allowing to easily inject them
+var Container di.Container
+
+func init() {
+	Container = createBuilder().Build()
+}
+
+func createBuilder() *di.Builder {
 	obj := di.Def{
 		Name: "my-object",
 		Build: func(ctn di.Container) (interface{}, error) {
