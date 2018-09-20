@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -25,23 +24,20 @@ func main() {
 	router.PathPrefix("/post").Handler(negroni.New(
 		negroni.Wrap(postcontroller.New(&postcontroller.Config{
 			PathPrefix: "/post",
-			Repository: postrepository.New(),
-			Tpl:        &tpl.TPL{},
+			Repository: inject.Container.Get("postrepository").(*postrepository.Repository),
+			Tpl:        inject.Container.Get("tpl").(*tpl.TPL),
 		}).Router)))
 
 	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
 		&rootcontroller.Config{
 			PathPrefix: "/",
-			Tpl:        &tpl.TPL{},
-			ServeFile:  http.ServeFile,
+			Tpl:        inject.Container.Get("tpl").(*tpl.TPL),
+			ServeFile:  inject.Container.Get("fileserver").(func(w http.ResponseWriter, r *http.Request, fileName string)),
 		}).Router)))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")
 	})
-
-	obj := inject.Container.Get("my-object").(*struct{ Name string })
-	fmt.Println(obj)
 
 	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 	server := &http.Server{

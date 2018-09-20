@@ -1,6 +1,12 @@
 package inject
 
-import "github.com/sarulabs/di"
+import (
+	"net/http"
+
+	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/sarulabs/di"
+)
 
 // Container stores all dependencies, allowing to easily inject them
 var Container di.Container
@@ -10,15 +16,29 @@ func init() {
 }
 
 func createBuilder() *di.Builder {
-	obj := di.Def{
-		Name: "my-object",
+	tpl := di.Def{
+		Name: "tpl",
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &struct{ Name string }{Name: "Loris"}, nil
+			return &tpl.TPL{}, nil
+		},
+	}
+
+	postRepository := di.Def{
+		Name: "postrepository",
+		Build: func(ctn di.Container) (interface{}, error) {
+			return postrepository.New(), nil
+		},
+	}
+
+	fileserver := di.Def{
+		Name: "fileserver",
+		Build: func(ctn di.Container) (interface{}, error) {
+			return http.ServeFile, nil
 		},
 	}
 
 	builder, _ := di.NewBuilder()
-	builder.Add(obj)
+	builder.Add(tpl, postRepository, fileserver)
 
 	return builder
 }
