@@ -6,7 +6,7 @@ import (
 	"github.com/L-oris/yabb/httperror"
 )
 
-func (c postController) new(w http.ResponseWriter, req *http.Request) {
+func (c Controller) new(w http.ResponseWriter, req *http.Request) {
 	partialPost, err := getPartialPostFromForm(req, true)
 	if err != nil {
 		httperror.BadRequest(w, "incomplete post received")
@@ -23,7 +23,7 @@ func (c postController) new(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusSeeOther)
 }
 
-func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
+func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
@@ -41,7 +41,7 @@ func (c postController) updateByID(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusSeeOther)
 }
 
-func (c postController) deleteByID(w http.ResponseWriter, req *http.Request) {
+func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
