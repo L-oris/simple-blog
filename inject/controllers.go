@@ -10,37 +10,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-// Container stores all dependencies, allowing to easily inject them
-var Container di.Container
-
-func init() {
-	Container = createBuilder().Build()
-}
-
-func createBuilder() *di.Builder {
-	templates := di.Def{
-		Name: "templates",
-		Build: func(ctn di.Container) (interface{}, error) {
-			return &tpl.TPL{}, nil
-		},
-	}
-
-	fileserver := di.Def{
-		Name: "fileserver",
-		Build: func(ctn di.Container) (interface{}, error) {
-			return http.ServeFile, nil
-		},
-	}
-
-	builder, _ := di.NewBuilder()
-	builder.Add(fileserver, templates)
-	builder.Add(createRepositories()...)
-	builder.Add(createControllers()...)
-
-	return builder
-}
-
-func createControllers() []di.Def {
+func getControllers() []di.Def {
 	rootControllerValue := di.Def{
 		Name: "rootcontroller",
 		Build: func(ctn di.Container) (interface{}, error) {
