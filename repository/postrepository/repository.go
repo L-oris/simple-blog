@@ -4,19 +4,22 @@ import (
 	"database/sql"
 
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/models/db"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/imdario/mergo"
 )
+
+type Config struct {
+	DB *sql.DB
+}
 
 type Repository struct {
 	DB *sql.DB
 }
 
 // New creates a new Repository
-func New() *Repository {
+func New(config *Config) *Repository {
 	return &Repository{
-		DB: db.BlogDB,
+		DB: config.DB,
 	}
 }
 

@@ -3,6 +3,7 @@ package inject
 import (
 	"net/http"
 
+	"github.com/L-oris/yabb/models/db"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/sarulabs/di"
@@ -26,7 +27,11 @@ func createBuilder() *di.Builder {
 	postRepository := di.Def{
 		Name: "postrepository",
 		Build: func(ctn di.Container) (interface{}, error) {
-			return postrepository.New(), nil
+			return postrepository.New(
+				&postrepository.Config{
+					DB: db.BlogDB,
+				},
+			), nil
 		},
 	}
 
