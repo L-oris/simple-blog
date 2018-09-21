@@ -25,13 +25,13 @@ func main() {
 		negroni.Wrap(postcontroller.New(&postcontroller.Config{
 			PathPrefix: "/post",
 			Repository: inject.Container.Get("postrepository").(*postrepository.Repository),
-			Tpl:        inject.Container.Get("tpl").(*tpl.TPL),
+			Tpl:        inject.Container.Get("templates").(*tpl.TPL),
 		}).Router)))
 
 	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
 		&rootcontroller.Config{
 			PathPrefix: "/",
-			Tpl:        inject.Container.Get("tpl").(*tpl.TPL),
+			Tpl:        inject.Container.Get("templates").(*tpl.TPL),
 			Serve:      inject.Container.Get("fileserver").(func(w http.ResponseWriter, r *http.Request, fileName string)),
 		}).Router)))
 
