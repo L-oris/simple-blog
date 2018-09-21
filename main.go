@@ -28,12 +28,10 @@ func main() {
 			Tpl:        inject.Container.Get("templates").(*tpl.TPL),
 		}).Router)))
 
-	router.PathPrefix("/").Handler(negroni.New(negroni.Wrap(rootcontroller.New(
-		&rootcontroller.Config{
-			PathPrefix: "/",
-			Tpl:        inject.Container.Get("templates").(*tpl.TPL),
-			Serve:      inject.Container.Get("fileserver").(func(w http.ResponseWriter, r *http.Request, fileName string)),
-		}).Router)))
+	router.PathPrefix("/").Handler(
+		negroni.New(negroni.Wrap(
+			inject.Container.Get("rootcontroller").(rootcontroller.Controller).Router),
+		))
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")
