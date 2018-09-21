@@ -11,8 +11,6 @@ import (
 	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/inject"
 	"github.com/L-oris/yabb/models/env"
-	"github.com/L-oris/yabb/models/tpl"
-	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
@@ -21,12 +19,10 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.PathPrefix("/post").Handler(negroni.New(
-		negroni.Wrap(postcontroller.New(&postcontroller.Config{
-			PathPrefix: "/post",
-			Repository: inject.Container.Get("postrepository").(*postrepository.Repository),
-			Tpl:        inject.Container.Get("templates").(*tpl.TPL),
-		}).Router)))
+	router.PathPrefix("/post").Handler(
+		negroni.New(negroni.Wrap(
+			inject.Container.Get("postcontroller").(postcontroller.Controller).Router),
+		))
 
 	router.PathPrefix("/").Handler(
 		negroni.New(negroni.Wrap(
