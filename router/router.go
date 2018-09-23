@@ -14,12 +14,12 @@ import (
 	"github.com/sarulabs/di"
 )
 
+// Mount creates and returns a new mux.Router, with all handled attached to it
 func Mount(ctn di.Container) http.Handler {
 	router := mux.NewRouter()
 
 	attachHandler(router, "/post", ctn.Get(types.PostController.String()).(postcontroller.Controller).Router)
 	attachHandler(router, "/", ctn.Get(types.RootController.String()).(rootcontroller.Controller).Router)
-
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")
 	})
