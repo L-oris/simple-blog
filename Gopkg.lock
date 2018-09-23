@@ -119,14 +119,6 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:d688f4ad71b5dfad95c2d74cb0feac09f8f3c32ae5cecc078230dbdeece39e53"
-  name = "github.com/urfave/negroni"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c6a59be0ce122566695fbd5e48a77f8f10c8a63a"
-  version = "v1.0.0"
-
-[[projects]]
   branch = "master"
   digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
   name = "golang.org/x/net"
@@ -171,7 +163,6 @@
     "github.com/oxtoacart/bpool",
     "github.com/sarulabs/di",
     "github.com/satori/go.uuid",
-    "github.com/urfave/negroni",
     "gotest.tools/assert",
   ]
   solver-name = "gps-cdcl"
