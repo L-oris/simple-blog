@@ -3,10 +3,10 @@ package postcontroller
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
 )
 
@@ -18,7 +18,7 @@ type Config struct {
 
 type postControllerStore map[string]post.Post
 
-type postController struct {
+type Controller struct {
 	repository *postrepository.Repository
 	store      postControllerStore
 	tpl        tpl.Template
@@ -26,8 +26,8 @@ type postController struct {
 }
 
 // New creates a new controller and registers the routes
-func New(config *Config) postController {
-	c := postController{
+func New(config *Config) Controller {
+	c := Controller{
 		repository: config.Repository,
 		store:      make(map[string]post.Post),
 		tpl:        config.Tpl,
@@ -49,7 +49,7 @@ func New(config *Config) postController {
 }
 
 // ping checks db connection
-func (c postController) ping(w http.ResponseWriter, req *http.Request) {
+func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	if err := c.repository.Ping(); err != nil {
 		httperror.InternalServer(w, "db not connected")
 		return

@@ -3,10 +3,10 @@ package postcontroller
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/router/httperror"
 )
 
-func (c postController) renderAll(w http.ResponseWriter, req *http.Request) {
+func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
 	posts, err := c.repository.GetAll()
 	if err != nil {
 		httperror.BadRequest(w, "cannot get posts")
@@ -14,11 +14,11 @@ func (c postController) renderAll(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "all.gohtml", posts)
 }
 
-func (c postController) renderNew(w http.ResponseWriter, req *http.Request) {
+func (c Controller) renderNew(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "new.gohtml", nil)
 }
 
-func (c postController) renderByID(w http.ResponseWriter, req *http.Request) {
+func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
@@ -32,7 +32,7 @@ func (c postController) renderByID(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "byID.gohtml", post)
 }
 
-func (c postController) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
+func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))

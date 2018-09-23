@@ -2,16 +2,17 @@ package rootcontroller
 
 import "net/http"
 
-type serveFile func(w http.ResponseWriter, r *http.Request, fileName string)
+// Serve defined a func used to serve files
+type Serve func(w http.ResponseWriter, r *http.Request, fileName string)
 
-func mockServeFile(result *mockServeFileResult) serveFile {
+func mockServe(result *mockServeResult) Serve {
 	return func(w http.ResponseWriter, req *http.Request, filePath string) {
 		result.callsCount++
 		result.filePath = filePath
 	}
 }
 
-type mockServeFileResult struct {
+type mockServeResult struct {
 	callsCount int
 	filePath   string
 }

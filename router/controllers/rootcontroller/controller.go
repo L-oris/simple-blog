@@ -12,20 +12,20 @@ import (
 type Config struct {
 	PathPrefix string
 	Tpl        tpl.Template
-	ServeFile  serveFile
+	Serve
 }
 
-type rootController struct {
+type Controller struct {
 	Router *mux.Router
-	serveFile
-	tpl tpl.Template
+	serve  Serve
+	tpl    tpl.Template
 }
 
 // New creates a new controller and registers the routes
-func New(config *Config) rootController {
-	c := rootController{
-		serveFile: config.ServeFile,
-		tpl:       config.Tpl,
+func New(config *Config) Controller {
+	c := Controller{
+		serve: config.Serve,
+		tpl:   config.Tpl,
 	}
 
 	router := mux.NewRouter()
@@ -41,7 +41,7 @@ func New(config *Config) rootController {
 }
 
 // static serves static files
-func (c rootController) static() http.Handler {
+func (c Controller) static() http.Handler {
 	var dir string
 	flag.StringVar(&dir, "dir", "public/", "the directory to serve files from /public")
 	flag.Parse()
@@ -50,16 +50,16 @@ func (c rootController) static() http.Handler {
 }
 
 // home serves the Home page
-func (c rootController) home(w http.ResponseWriter, req *http.Request) {
+func (c Controller) home(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "home.gohtml", nil)
 }
 
 // ping is used for health check
-func (c rootController) ping(w http.ResponseWriter, req *http.Request) {
+func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	logger.Log.Debug("ping pong request")
 	w.Write([]byte("pong"))
 }
 
-func (c rootController) favicon(w http.ResponseWriter, req *http.Request) {
-	c.serveFile(w, req, "public/favicon.ico")
+func (c Controller) favicon(w http.ResponseWriter, req *http.Request) {
+	c.serve(w, req, "public/favicon.ico")
 }
