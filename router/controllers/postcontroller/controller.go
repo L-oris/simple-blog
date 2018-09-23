@@ -20,7 +20,6 @@ type postControllerStore map[string]post.Post
 
 type Controller struct {
 	repository *postrepository.Repository
-	store      postControllerStore
 	tpl        tpl.Template
 	Router     *mux.Router
 }
@@ -29,7 +28,6 @@ type Controller struct {
 func New(config *Config) Controller {
 	c := Controller{
 		repository: config.Repository,
-		store:      make(map[string]post.Post),
 		tpl:        config.Tpl,
 	}
 

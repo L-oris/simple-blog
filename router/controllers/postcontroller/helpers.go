@@ -23,7 +23,7 @@ func getPostIDFromURL(req *http.Request) (int, error) {
 }
 
 // getPartialPostFromForm parses request form and returns a post with Title & Content (other values are zeroed)
-// 'checkTitleAndContent' defines whether title & content should be mandatory
+// 'checkTitleAndContent' param defines whether title & content should be mandatory
 func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.Post, error) {
 	req.ParseForm()
 	partialPost := post.Post{
