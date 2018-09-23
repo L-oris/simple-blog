@@ -10,6 +10,7 @@ var (
 	Templates      = t{"templates"}
 	FileServer     = t{"fileserver"}
 	PostRepository = t{"postrepository"}
+	Router         = t{"router"}
 	RootController = t{"rootcontroller"}
 	PostController = t{"postcontroller"}
 )

@@ -17,6 +17,7 @@ func createBuilder() *di.Builder {
 	builder.Add(core()...)
 	builder.Add(repositories()...)
 	builder.Add(controllers()...)
+	builder.Add(routers()...)
 
 	return builder
 }
