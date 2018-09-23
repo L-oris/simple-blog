@@ -10,7 +10,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-func getControllers() []di.Def {
+func controllers() []di.Def {
 	rootControllerValue := di.Def{
 		Name: "rootcontroller",
 		Build: func(ctn di.Container) (interface{}, error) {

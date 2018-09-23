@@ -6,7 +6,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-func getRepositories() []di.Def {
+func repositories() []di.Def {
 	postRepository := di.Def{
 		Name: "postrepository",
 		Build: func(ctn di.Container) (interface{}, error) {

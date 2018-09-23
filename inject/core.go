@@ -7,7 +7,7 @@ import (
 	"github.com/sarulabs/di"
 )
 
-func getCore() []di.Def {
+func core() []di.Def {
 	templates := di.Def{
 		Name: "templates",
 		Build: func(ctn di.Container) (interface{}, error) {

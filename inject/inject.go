@@ -14,9 +14,9 @@ func init() {
 func createBuilder() *di.Builder {
 	builder, _ := di.NewBuilder()
 
-	builder.Add(getCore()...)
-	builder.Add(getRepositories()...)
-	builder.Add(getControllers()...)
+	builder.Add(core()...)
+	builder.Add(repositories()...)
+	builder.Add(controllers()...)
 
 	return builder
 }
