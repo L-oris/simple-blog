@@ -3,11 +3,11 @@ package inject
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/controller/postcontroller"
-	"github.com/L-oris/yabb/controller/rootcontroller"
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/L-oris/yabb/router/controllers/postcontroller"
+	"github.com/L-oris/yabb/router/controllers/rootcontroller"
 	"github.com/sarulabs/di"
 )
 

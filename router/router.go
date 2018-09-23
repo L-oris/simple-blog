@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/L-oris/yabb/controller/postcontroller"
-	"github.com/L-oris/yabb/controller/rootcontroller"
-	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/inject/types"
+	"github.com/L-oris/yabb/router/controllers/postcontroller"
+	"github.com/L-oris/yabb/router/controllers/rootcontroller"
+	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sarulabs/di"

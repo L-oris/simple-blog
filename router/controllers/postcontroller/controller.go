@@ -3,10 +3,10 @@ package postcontroller
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/httperror"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
 )
 

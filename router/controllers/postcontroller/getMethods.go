@@ -3,7 +3,7 @@ package postcontroller
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/httperror"
+	"github.com/L-oris/yabb/router/httperror"
 )
 
 func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
