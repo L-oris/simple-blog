@@ -11,9 +11,8 @@ import (
 )
 
 func main() {
-
-	router := inject.Container.Get(types.Router.String()).(http.Handler)
-
+	container := inject.CreateContainer()
+	router := container.Get(types.Router.String()).(http.Handler)
 	server := &http.Server{
 		Addr:         ":" + env.Vars.Port,
 		Handler:      router,
