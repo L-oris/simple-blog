@@ -10,8 +10,7 @@ import (
 )
 
 type Config struct {
-	PathPrefix string
-	Tpl        tpl.Template
+	Tpl tpl.Template
 	Serve
 }
 
@@ -30,11 +29,9 @@ func New(config *Config) Controller {
 
 	router := mux.NewRouter()
 	router.PathPrefix("/static/").Handler(c.static())
-
-	routes := router.PathPrefix(config.PathPrefix).Subrouter()
-	routes.HandleFunc("/", c.home).Methods("GET")
-	routes.HandleFunc("/ping", c.ping).Methods("GET")
-	routes.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
+	router.HandleFunc("/", c.home).Methods("GET")
+	router.HandleFunc("/ping", c.ping).Methods("GET")
+	router.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 
 	c.Router = router
 	return c

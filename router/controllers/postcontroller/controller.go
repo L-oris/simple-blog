@@ -10,7 +10,6 @@ import (
 )
 
 type Config struct {
-	PathPrefix string
 	Repository *postrepository.Repository
 	Tpl        tpl.Template
 }
@@ -29,15 +28,14 @@ func New(config *Config) Controller {
 	}
 
 	router := mux.NewRouter()
-	routes := router.PathPrefix(config.PathPrefix).Subrouter()
-	routes.HandleFunc("/ping", c.ping).Methods("GET")
-	routes.HandleFunc("/all", c.renderAll).Methods("GET")
-	routes.HandleFunc("/new", c.renderNew).Methods("GET")
-	routes.HandleFunc("/{id}", c.renderByID).Methods("GET")
-	routes.HandleFunc("/{id}/update", c.renderUpdateByID).Methods("GET")
-	routes.HandleFunc("/new", c.new).Methods("POST")
-	routes.HandleFunc("/{id}/update", c.updateByID).Methods("POST")
-	routes.HandleFunc("/{id}/delete", c.deleteByID).Methods("POST")
+	router.HandleFunc("/ping", c.ping).Methods("GET")
+	router.HandleFunc("/all", c.renderAll).Methods("GET")
+	router.HandleFunc("/new", c.renderNew).Methods("GET")
+	router.HandleFunc("/{id}", c.renderByID).Methods("GET")
+	router.HandleFunc("/{id}/update", c.renderUpdateByID).Methods("GET")
+	router.HandleFunc("/new", c.new).Methods("POST")
+	router.HandleFunc("/{id}/update", c.updateByID).Methods("POST")
+	router.HandleFunc("/{id}/delete", c.deleteByID).Methods("POST")
 
 	c.Router = router
 	return c

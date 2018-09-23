@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"
@@ -16,17 +17,21 @@ import (
 func Mount(ctn di.Container) http.Handler {
 	router := mux.NewRouter()
 
-	router.PathPrefix("/post").Handler(
-		ctn.Get(types.PostController.String()).(postcontroller.Controller).Router,
-	)
-
-	router.PathPrefix("/").Handler(
-		ctn.Get(types.RootController.String()).(rootcontroller.Controller).Router,
-	)
+	attachHandler(router, "/post", ctn.Get(types.PostController.String()).(postcontroller.Controller).Router)
+	attachHandler(router, "/", ctn.Get(types.RootController.String()).(rootcontroller.Controller).Router)
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")
 	})
 
 	return handlers.LoggingHandler(os.Stdout, router)
+}
+
+func attachHandler(r *mux.Router, path string, handler http.Handler) {
+	r.PathPrefix(path).Handler(
+		http.StripPrefix(
+			strings.TrimSuffix(path, "/"),
+			handler,
+		),
+	)
 }
