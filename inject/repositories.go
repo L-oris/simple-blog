@@ -2,7 +2,7 @@ package inject
 
 import (
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/models/db"
+	"github.com/L-oris/yabb/repository/db"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/sarulabs/di"
 )
