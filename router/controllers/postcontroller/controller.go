@@ -3,7 +3,6 @@ package postcontroller
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/L-oris/yabb/router/httperror"
@@ -15,8 +14,6 @@ type Config struct {
 	Repository *postrepository.Repository
 	Tpl        tpl.Template
 }
-
-type postControllerStore map[string]post.Post
 
 type Controller struct {
 	repository *postrepository.Repository
