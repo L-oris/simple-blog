@@ -2,12 +2,23 @@ package rootcontroller
 
 import (
 	"flag"
+	"fmt"
+	"io/ioutil"
+	"mime"
 	"net/http"
+	"os"
+	"path/filepath"
+
+	"github.com/L-oris/yabb/router/httperror"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
+
+const uploadPath = "./tmp"
+const maxUploadSize = 5 * 1024
 
 type Config struct {
 	Tpl tpl.Template
@@ -32,6 +43,8 @@ func New(config *Config) Controller {
 	router.HandleFunc("/", c.home).Methods("GET")
 	router.HandleFunc("/ping", c.ping).Methods("GET")
 	router.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
+	router.HandleFunc("/upload", c.uploadGet).Methods("GET")
+	router.HandleFunc("/upload", c.uploadPost).Methods("POST")
 
 	c.Router = router
 	return c
@@ -59,4 +72,69 @@ func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 
 func (c Controller) favicon(w http.ResponseWriter, req *http.Request) {
 	c.serve(w, req, "public/favicon.ico")
+}
+
+func (c Controller) uploadGet(w http.ResponseWriter, req *http.Request) {
+	c.tpl.Render(w, "upload.gohtml", nil)
+}
+
+func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
+	// req.Body = http.MaxBytesReader(w, req.Body, maxUploadSize)
+	// if err := req.ParseMultipartForm(maxUploadSize); err != nil {
+	// 	fmt.Println(err)
+	// 	httperror.BadRequest(w, "file too big")
+	// 	return
+	// }
+
+	multipartFile, _, err := req.FormFile("nf")
+	if err != nil {
+		fmt.Println(err)
+		httperror.BadRequest(w, "invalid file")
+		return
+	}
+	defer multipartFile.Close()
+
+	fileBytes, err := ioutil.ReadAll(multipartFile)
+	if err != nil {
+		fmt.Println(err)
+		httperror.BadRequest(w, "invalid file")
+		return
+	}
+
+	fileType := http.DetectContentType(fileBytes)
+	if ok := checkFileType(fileType); !ok {
+		httperror.BadRequest(w, "invalid file type")
+		return
+	}
+
+	fileName := uuid.NewV4().String()
+	fileEndings, err := mime.ExtensionsByType(fileType)
+	if err != nil {
+		fmt.Println(err)
+		httperror.BadRequest(w, "invalid file type")
+		return
+	}
+
+	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
+	fmt.Printf("FileType: %s, File: %s\n", fileType, newPath)
+
+	newFile, err := os.Create(newPath)
+	if err != nil {
+		fmt.Println(err)
+		httperror.BadRequest(w, "cannot create new file")
+		return
+	}
+	defer newFile.Close()
+
+	if _, err := newFile.Write(fileBytes); err != nil {
+		fmt.Println(err)
+		httperror.BadRequest(w, "cannot write into new file")
+		return
+	}
+
+	w.Write([]byte("uploading ok"))
+}
+
+func checkFileType(fileType string) bool {
+	return true
 }
