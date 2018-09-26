@@ -9,6 +9,9 @@ import (
 // InternalServer writes a default 500 Internal Server to the client
 func InternalServer(w http.ResponseWriter, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json")
+	if errorMessage == "" {
+		errorMessage = "Internal Server Error"
+	}
 	em := ErrorMessage{
 		Status:      http.StatusBadRequest,
 		Message:     "Internal Server Error",

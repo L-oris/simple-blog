@@ -1,7 +1,10 @@
 .env
 vendor/
 
-# vs code extension
+# temporary files for upload
+tmp/*
+
+# vsCode extension
 debug
 
 # binary name

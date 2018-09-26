@@ -2,7 +2,6 @@ package rootcontroller
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -86,55 +85,55 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	// 	return
 	// }
 
-	multipartFile, _, err := req.FormFile("nf")
+	multipartFile, _, err := req.FormFile("postImage")
 	if err != nil {
-		fmt.Println(err)
-		httperror.BadRequest(w, "invalid file")
+		logger.Log.Error("could not get form from template: %s", err.Error())
+		httperror.InternalServer(w, "invalid template form")
 		return
 	}
 	defer multipartFile.Close()
 
 	fileBytes, err := ioutil.ReadAll(multipartFile)
 	if err != nil {
-		fmt.Println(err)
-		httperror.BadRequest(w, "invalid file")
+		logger.Log.Debug("invalid file uploaded: %s", err.Error())
+		httperror.BadRequest(w, "invalid file provided")
 		return
 	}
 
-	fileType := http.DetectContentType(fileBytes)
-	if ok := checkFileType(fileType); !ok {
-		httperror.BadRequest(w, "invalid file type")
+	contentType := http.DetectContentType(fileBytes)
+	if ok := checkContentType(contentType); !ok {
+		httperror.BadRequest(w, "invalid fileType provided")
 		return
 	}
 
+	fileEndings, _ := mime.ExtensionsByType(contentType)
 	fileName := uuid.NewV4().String()
-	fileEndings, err := mime.ExtensionsByType(fileType)
-	if err != nil {
-		fmt.Println(err)
-		httperror.BadRequest(w, "invalid file type")
-		return
-	}
-
 	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
-	fmt.Printf("FileType: %s, File: %s\n", fileType, newPath)
+	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
 
 	newFile, err := os.Create(newPath)
 	if err != nil {
-		fmt.Println(err)
-		httperror.BadRequest(w, "cannot create new file")
+		logger.Log.Error("could not create new empty file: %s", err.Error())
+		httperror.InternalServer(w, "")
 		return
 	}
 	defer newFile.Close()
 
 	if _, err := newFile.Write(fileBytes); err != nil {
-		fmt.Println(err)
-		httperror.BadRequest(w, "cannot write into new file")
+		logger.Log.Error("could not write bytes[] into new empty file: %s", err.Error())
+		httperror.InternalServer(w, "")
 		return
 	}
 
 	w.Write([]byte("uploading ok"))
 }
 
-func checkFileType(fileType string) bool {
+func checkContentType(fileType string) bool {
+	if fileType != "image/jpeg" &&
+		fileType != "image/jpg" &&
+		fileType != "image/gif" &&
+		fileType != "image/png" {
+		return false
+	}
 	return true
 }

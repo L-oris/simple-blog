@@ -41,7 +41,7 @@ func (r Repository) GetAll() ([]post.Post, error) {
 	for rows.Next() {
 		post := post.Post{}
 		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.CreatedAt); err != nil {
-			logger.Log.Error("scan error: ", err.Error())
+			logger.Log.Error("scan error: %s", err.Error())
 			return nil, err
 		}
 		result = append(result, post)
@@ -58,7 +58,7 @@ func (r Repository) GetByID(id int) (post.Post, error) {
 
 	result := post.Post{}
 	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.CreatedAt); err != nil {
-		logger.Log.Warning("scan error: ", err.Error())
+		logger.Log.Warning("scan error: %s", err.Error())
 		return post.Post{}, err
 	}
 
@@ -72,7 +72,7 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 	sqlStatement := `INSERT INTO Posts (Title, Content) VALUES (?, ?);`
 	queryReturn, err := r.DB.Exec(sqlStatement, partialPost.Title, partialPost.Content)
 	if err != nil {
-		logger.Log.Warning("insert error: ", err.Error())
+		logger.Log.Warning("insert error: %s", err.Error())
 		return post.Post{}, err
 	}
 
@@ -89,14 +89,14 @@ func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error)
 	}
 
 	if err = mergo.Merge(&dbPost, partialPost, mergo.WithOverride); err != nil {
-		logger.Log.Error("failed to merge posts: ", err.Error())
+		logger.Log.Error("failed to merge posts: %s", err.Error())
 		return post.Post{}, err
 	}
 
 	sqlStatement := `UPDATE Posts SET Title=?, Content=? WHERE ID=?`
 	_, err = r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.ID)
 	if err != nil {
-		logger.Log.Error("cannot update post: ", err.Error())
+		logger.Log.Error("cannot update post: %s", err.Error())
 		return post.Post{}, nil
 	}
 
@@ -115,7 +115,7 @@ func (r Repository) DeleteByID(id int) error {
 	sqlStatement := `DELETE FROM Posts WHERE ID=?`
 	_, err = r.DB.Exec(sqlStatement, id)
 	if err != nil {
-		logger.Log.Error("cannot delete post: ", err.Error())
+		logger.Log.Error("cannot delete post: %s", err.Error())
 		return err
 	}
 
