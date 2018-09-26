@@ -17,7 +17,7 @@ import (
 )
 
 const uploadPath = "./tmp"
-const maxUploadSize = 5 * 1024
+const maxUploadSize = 2 * 1024 * 1024 // MB
 
 type Config struct {
 	Tpl tpl.Template
@@ -78,12 +78,12 @@ func (c Controller) uploadGet(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
-	// req.Body = http.MaxBytesReader(w, req.Body, maxUploadSize)
-	// if err := req.ParseMultipartForm(maxUploadSize); err != nil {
-	// 	fmt.Println(err)
-	// 	httperror.BadRequest(w, "file too big")
-	// 	return
-	// }
+	req.Body = http.MaxBytesReader(w, req.Body, maxUploadSize)
+	if err := req.ParseMultipartForm(maxUploadSize); err != nil {
+		logger.Log.Debug("uploaded file is too big: %s", err.Error())
+		httperror.BadRequest(w, "file provided is too large")
+		return
+	}
 
 	multipartFile, _, err := req.FormFile("postImage")
 	if err != nil {
