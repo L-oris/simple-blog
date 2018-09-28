@@ -1,4 +1,7 @@
+# env variables
 .env
+
+# imported packages
 vendor/
 
 # temporary files for upload
@@ -9,3 +12,6 @@ debug
 
 # binary name
 mongoRestAPI 
+
+# google cloud access credentials
+gcp.json

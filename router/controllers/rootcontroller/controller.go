@@ -1,6 +1,7 @@
 package rootcontroller
 
 import (
+	"context"
 	"flag"
 	"io/ioutil"
 	"mime"
@@ -9,6 +10,9 @@ import (
 	"path/filepath"
 
 	"github.com/L-oris/yabb/router/httperror"
+	"github.com/google/go-cloud/blob"
+	"github.com/google/go-cloud/blob/gcsblob"
+	"github.com/google/go-cloud/gcp"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
@@ -111,6 +115,25 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
 	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
 
+	// here bucket code
+
+	bucket, err := setupGCP(CTX, "yabb")
+	if err != nil {
+		logger.Log.Fatalf("setup bucket error: %s", err.Error())
+	}
+	bucketWriter, err := bucket.NewWriter(CTX, fileName, nil)
+	if err != nil {
+		logger.Log.Fatalf("create bucketWriter error: %s", err.Error())
+	}
+	if _, err := bucketWriter.Write(fileBytes); err != nil {
+		logger.Log.Fatalf("write to bucket error: %s", err.Error())
+	}
+	if err := bucketWriter.Close(); err != nil {
+		logger.Log.Fatalf("close bucket error: %s", err.Error())
+	}
+
+	// until here bucket code
+
 	newFile, err := os.Create(newPath)
 	if err != nil {
 		logger.Log.Error("could not create new empty file: %s", err.Error())
@@ -136,4 +159,24 @@ func checkContentType(fileType string) bool {
 		return false
 	}
 	return true
+}
+
+var CTX context.Context
+
+func init() {
+	CTX = context.Background()
+}
+
+func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
+	credentials, err := gcp.DefaultCredentials(CTX)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := gcp.NewHTTPClient(gcp.DefaultTransport(), gcp.CredentialsTokenSource(credentials))
+	if err != nil {
+		return nil, err
+	}
+
+	return gcsblob.OpenBucket(CTX, bucket, client)
 }
