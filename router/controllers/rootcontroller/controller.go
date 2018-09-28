@@ -1,7 +1,6 @@
 package rootcontroller
 
 import (
-	"context"
 	"flag"
 	"io/ioutil"
 	"mime"
@@ -9,10 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/L-oris/yabb/resources"
 	"github.com/L-oris/yabb/router/httperror"
-	"github.com/google/go-cloud/blob"
-	"github.com/google/go-cloud/blob/gcsblob"
-	"github.com/google/go-cloud/gcp"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
@@ -117,11 +114,11 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 
 	// here bucket code
 
-	bucket, err := setupGCP(CTX, "yabb")
+	bucket, err := resources.SetupGCP(resources.CTX, "yabb")
 	if err != nil {
 		logger.Log.Fatalf("setup bucket error: %s", err.Error())
 	}
-	bucketWriter, err := bucket.NewWriter(CTX, fileName, nil)
+	bucketWriter, err := bucket.NewWriter(resources.CTX, fileName, nil)
 	if err != nil {
 		logger.Log.Fatalf("create bucketWriter error: %s", err.Error())
 	}
@@ -159,24 +156,4 @@ func checkContentType(fileType string) bool {
 		return false
 	}
 	return true
-}
-
-var CTX context.Context
-
-func init() {
-	CTX = context.Background()
-}
-
-func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
-	credentials, err := gcp.DefaultCredentials(CTX)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := gcp.NewHTTPClient(gcp.DefaultTransport(), gcp.CredentialsTokenSource(credentials))
-	if err != nil {
-		return nil, err
-	}
-
-	return gcsblob.OpenBucket(CTX, bucket, client)
 }
