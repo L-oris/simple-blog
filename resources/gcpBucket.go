@@ -11,8 +11,8 @@ import (
 
 var yabbBucket *blob.Bucket
 
-// GetYabbBucket returns *blob.Bucket to 'yabb'
-func GetYabbBucket(ctx context.Context) (*blob.Bucket, error) {
+// GetYabbBucket returns gets pointer to 'yabb' bucket
+func GetYabbBucket() (*blob.Bucket, error) {
 	if yabbBucket != nil {
 		logger.Log.Debug("found existing bucket")
 		return yabbBucket, nil
@@ -20,7 +20,7 @@ func GetYabbBucket(ctx context.Context) (*blob.Bucket, error) {
 
 	logger.Log.Debug("setting up new bucket")
 	var err error // avoid variable shadowing
-	yabbBucket, err = setupGCP(ctx, "yabb")
+	yabbBucket, err = setupGCP(CTX, "yabb")
 	return yabbBucket, err
 }
 

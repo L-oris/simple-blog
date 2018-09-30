@@ -44,7 +44,7 @@ func New(config *Config) Controller {
 	router.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 	router.HandleFunc("/upload", c.uploadGet).Methods("GET")
 	router.HandleFunc("/upload", c.uploadPost).Methods("POST")
-	router.HandleFunc("/serveBucket/{id}", c.serveBucket).Methods("GET")
+	router.HandleFunc("/bucket/{id}", c.serveBucket).Methods("GET")
 
 	c.Router = router
 	return c
@@ -112,7 +112,7 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
 	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
 
-	bucket, err := resources.GetYabbBucket(resources.CTX)
+	bucket, err := resources.GetYabbBucket()
 	if err != nil {
 		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
 	}
@@ -144,7 +144,7 @@ func (c Controller) serveBucket(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	imageId := vars["id"]
 
-	bucket, err := resources.GetYabbBucket(resources.CTX)
+	bucket, err := resources.GetYabbBucket()
 	if err != nil {
 		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
 	}
