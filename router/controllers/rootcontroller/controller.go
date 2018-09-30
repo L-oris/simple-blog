@@ -44,6 +44,7 @@ func New(config *Config) Controller {
 	router.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 	router.HandleFunc("/upload", c.uploadGet).Methods("GET")
 	router.HandleFunc("/upload", c.uploadPost).Methods("POST")
+	router.HandleFunc("/serveBucket/{id}", c.serveBucket).Methods("GET")
 
 	c.Router = router
 	return c
@@ -137,4 +138,29 @@ func checkContentType(fileType string) bool {
 		return false
 	}
 	return true
+}
+
+func (c Controller) serveBucket(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	imageId := vars["id"]
+
+	bucket, err := resources.GetYabbBucket(resources.CTX)
+	if err != nil {
+		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
+	}
+	bucketReader, err := bucket.NewReader(resources.CTX, imageId)
+	if err != nil {
+		httperror.BadRequest(w, "cannot find file")
+		return
+	}
+	defer bucketReader.Close()
+
+	newFile, err := ioutil.ReadAll(bucketReader)
+	if err != nil {
+		logger.Log.Fatalf("cannot create new file from GCS: %s", err.Error())
+	}
+
+	// TODO: set headers based on content type, not always jpeg
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(newFile)
 }
