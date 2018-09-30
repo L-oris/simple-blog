@@ -114,9 +114,9 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 
 	// here bucket code
 
-	bucket, err := resources.SetupGCP(resources.CTX, "yabb")
+	bucket, err := resources.GetYabbBucket(resources.CTX)
 	if err != nil {
-		logger.Log.Fatalf("setup bucket error: %s", err.Error())
+		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
 	}
 	bucketWriter, err := bucket.NewWriter(resources.CTX, fileName, nil)
 	if err != nil {

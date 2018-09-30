@@ -3,13 +3,28 @@ package resources
 import (
 	"context"
 
+	"github.com/L-oris/yabb/logger"
 	"github.com/google/go-cloud/blob"
 	"github.com/google/go-cloud/blob/gcsblob"
 	"github.com/google/go-cloud/gcp"
 )
 
-// SetupGCP sets up Google Cloud Bucket
-func SetupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
+var yabbBucket *blob.Bucket
+
+func GetYabbBucket(ctx context.Context) (*blob.Bucket, error) {
+	if yabbBucket != nil {
+		logger.Log.Debug("found existing bucket")
+		return yabbBucket, nil
+	}
+
+	logger.Log.Debug("setting up new bucket")
+	var err error // avoid variable shadowing
+	yabbBucket, err = setupGCP(ctx, "yabb")
+	return yabbBucket, err
+}
+
+// setupGCP sets up Google Cloud Bucket
+func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
 	credentials, err := gcp.DefaultCredentials(CTX)
 	if err != nil {
 		return nil, err
