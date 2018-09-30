@@ -11,6 +11,7 @@ import (
 
 var yabbBucket *blob.Bucket
 
+// GetYabbBucket returns *blob.Bucket to 'yabb'
 func GetYabbBucket(ctx context.Context) (*blob.Bucket, error) {
 	if yabbBucket != nil {
 		logger.Log.Debug("found existing bucket")

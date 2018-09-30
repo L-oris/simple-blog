@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/http"
-	"os"
 	"path/filepath"
 
 	"github.com/L-oris/yabb/resources"
@@ -112,8 +111,6 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
 	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
 
-	// here bucket code
-
 	bucket, err := resources.GetYabbBucket(resources.CTX)
 	if err != nil {
 		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
@@ -127,22 +124,6 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	}
 	if err := bucketWriter.Close(); err != nil {
 		logger.Log.Fatalf("close bucket error: %s", err.Error())
-	}
-
-	// until here bucket code
-
-	newFile, err := os.Create(newPath)
-	if err != nil {
-		logger.Log.Error("could not create new empty file: %s", err.Error())
-		httperror.InternalServer(w, "")
-		return
-	}
-	defer newFile.Close()
-
-	if _, err := newFile.Write(fileBytes); err != nil {
-		logger.Log.Error("could not write bytes[] into new empty file: %s", err.Error())
-		httperror.InternalServer(w, "")
-		return
 	}
 
 	w.Write([]byte("uploading ok"))
