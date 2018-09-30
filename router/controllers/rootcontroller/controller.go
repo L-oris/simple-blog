@@ -160,7 +160,6 @@ func (c Controller) serveBucket(w http.ResponseWriter, req *http.Request) {
 		logger.Log.Fatalf("cannot create new file from GCS: %s", err.Error())
 	}
 
-	// TODO: set headers based on content type, not always jpeg
-	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Type", http.DetectContentType(newFile))
 	w.Write(newFile)
 }
