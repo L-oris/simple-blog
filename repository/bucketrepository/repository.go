@@ -20,14 +20,12 @@ type Repository struct {
 
 // New creates a new Repository
 func New(config Config) (*Repository, error) {
-	bucket, err := resources.GetYabbBucket()
+	bucket, err := setupGCP(ctx, config.BucketName)
 	if err != nil {
 		return &Repository{}, err
 	}
 
-	return &Repository{
-		bucket,
-	}, nil
+	return &Repository{bucket}, nil
 }
 
 // Write writes a file to bucket

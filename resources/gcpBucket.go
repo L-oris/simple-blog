@@ -24,7 +24,7 @@ func GetYabbBucket() (*blob.Bucket, error) {
 	return yabbBucket, err
 }
 
-// setupGCP sets up Google Cloud Bucket
+// setupGCP sets up connection to Google Cloud Bucket
 func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
 	credentials, err := gcp.DefaultCredentials(CTX)
 	if err != nil {
