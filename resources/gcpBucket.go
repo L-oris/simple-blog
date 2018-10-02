@@ -11,7 +11,7 @@ import (
 
 var yabbBucket *blob.Bucket
 
-// GetYabbBucket returns gets pointer to 'yabb' bucket
+// GetYabbBucket gets pointer to 'yabb' bucket
 func GetYabbBucket() (*blob.Bucket, error) {
 	if yabbBucket != nil {
 		logger.Log.Debug("found existing bucket")
