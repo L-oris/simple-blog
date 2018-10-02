@@ -13,7 +13,7 @@ type Config struct {
 	BucketName string
 }
 
-// Repository for GCP buckets
+// Repository for GCP buckets; exported for DI declarations
 type Repository struct {
 	bucket *blob.Bucket
 }

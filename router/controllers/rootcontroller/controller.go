@@ -2,16 +2,16 @@ package rootcontroller
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"mime"
 	"net/http"
 	"path/filepath"
 
-	"github.com/L-oris/yabb/resources"
-	"github.com/L-oris/yabb/router/httperror"
-
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/repository/bucketrepository"
+	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
 )
@@ -28,13 +28,22 @@ type Controller struct {
 	Router *mux.Router
 	serve  Serve
 	tpl    tpl.Template
+	bucket *bucketrepository.Repository
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) Controller {
+	bucketRepository, err := bucketrepository.New(
+		bucketrepository.Config{"yabb"},
+	)
+	if err != nil {
+		logger.Log.Fatalf("could not create bucket: %s", err.Error())
+	}
+
 	c := Controller{
-		serve: config.Serve,
-		tpl:   config.Tpl,
+		serve:  config.Serve,
+		tpl:    config.Tpl,
+		bucket: bucketRepository,
 	}
 
 	router := mux.NewRouter()
@@ -112,21 +121,11 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
 	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
 
-	bucket, err := resources.GetYabbBucket()
+	err = c.bucket.Write(fileName, fileBytes)
 	if err != nil {
-		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
+		httperror.InternalServer(w, "cannot save file")
+		return
 	}
-	bucketWriter, err := bucket.NewWriter(resources.CTX, fileName, nil)
-	if err != nil {
-		logger.Log.Fatalf("create bucketWriter error: %s", err.Error())
-	}
-	if _, err := bucketWriter.Write(fileBytes); err != nil {
-		logger.Log.Fatalf("write to bucket error: %s", err.Error())
-	}
-	if err := bucketWriter.Close(); err != nil {
-		logger.Log.Fatalf("close bucket error: %s", err.Error())
-	}
-
 	w.Write([]byte("uploading ok"))
 }
 
@@ -142,24 +141,13 @@ func checkContentType(fileType string) bool {
 
 func (c Controller) serveBucket(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	imageId := vars["id"]
+	imageID := vars["id"]
 
-	bucket, err := resources.GetYabbBucket()
+	file, err := c.bucket.Read(imageID)
 	if err != nil {
-		logger.Log.Fatalf("get yabbBucket error: %s", err.Error())
-	}
-	bucketReader, err := bucket.NewReader(resources.CTX, imageId)
-	if err != nil {
-		httperror.BadRequest(w, "cannot find file")
-		return
-	}
-	defer bucketReader.Close()
-
-	newFile, err := ioutil.ReadAll(bucketReader)
-	if err != nil {
-		logger.Log.Fatalf("cannot create new file from GCS: %s", err.Error())
+		httperror.NotFound(w, fmt.Sprintf("file %s not found", imageID))
 	}
 
-	w.Header().Set("Content-Type", http.DetectContentType(newFile))
-	w.Write(newFile)
+	w.Header().Set("Content-Type", http.DetectContentType(file))
+	w.Write(file)
 }

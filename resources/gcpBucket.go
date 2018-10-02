@@ -18,7 +18,7 @@ func GetYabbBucket() (*blob.Bucket, error) {
 		return yabbBucket, nil
 	}
 
-	logger.Log.Debug("setting up new bucket")
+	logger.Log.Debug("setting up bucket connection")
 	var err error // avoid variable shadowing
 	yabbBucket, err = setupGCP(CTX, "yabb")
 	return yabbBucket, err
