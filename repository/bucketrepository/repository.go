@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/resources"
 	"github.com/google/go-cloud/blob"
 )
 
@@ -30,7 +29,7 @@ func New(config Config) (*Repository, error) {
 
 // Write writes a file to bucket
 func (c Repository) Write(fileName string, fileBytes []byte) error {
-	bucketWriter, err := c.bucket.NewWriter(resources.CTX, fileName, nil)
+	bucketWriter, err := c.bucket.NewWriter(ctx, fileName, nil)
 	if err != nil {
 		logger.Log.Errorf("create bucketWriter error: %s", err.Error())
 		return err
@@ -51,7 +50,7 @@ func (c Repository) Write(fileName string, fileBytes []byte) error {
 
 // Read reads a file from bucket
 func (c Repository) Read(fileName string) ([]byte, error) {
-	bucketReader, err := c.bucket.NewReader(resources.CTX, fileName)
+	bucketReader, err := c.bucket.NewReader(ctx, fileName)
 	if err != nil {
 		logger.Log.Errorf("cannot find file %s: %s", fileName, err.Error())
 		return nil, err

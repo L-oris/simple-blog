@@ -12,11 +12,13 @@ import (
 func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
 	credentials, err := gcp.DefaultCredentials(ctx)
 	if err != nil {
+		// TODO: logs
 		return nil, err
 	}
 
 	client, err := gcp.NewHTTPClient(gcp.DefaultTransport(), gcp.CredentialsTokenSource(credentials))
 	if err != nil {
+		// TODO: logs
 		return nil, err
 	}
 
