@@ -10,6 +10,9 @@
         <input type="text" name="title" value="{{.Title}}">
         <h4>Content</h4>
         <input type="text" name="content" value="{{.Content}}">
+        {{if .Picture}}
+            <img src="/bucket/{{.Picture}}"/>
+        {{end}}
 
         <button type="submit">Submit</button>
     </form>

@@ -4,11 +4,12 @@
 
 {{define "content"}}
 <div>
-    <form action="/post/new" method="POST">
+    <form action="/post/new" method="POST" enctype="multipart/form-data">
         <h4>Title</h4>
         <input type="text" name="title">
         <h4>Content</h4>
         <input type="text" name="content">
+        <input type="file" name="postImage">
 
         <button type="submit">Submit</button>
     </form>
