@@ -7,6 +7,7 @@
     -   only partially tested
 -   Google Cloud Storage for image uploading/downloading
     -   `https://github.com/google/go-cloud` library, works great but still not safe for production
+-   Server side rendering with Go Templates
 
 ### Todo
 

@@ -34,17 +34,10 @@ type Controller struct {
 
 // New creates a new controller and registers the routes
 func New(config *Config) Controller {
-	bucketRepository, err := bucketrepository.New(
-		bucketrepository.Config{"yabb"},
-	)
-	if err != nil {
-		logger.Log.Fatalf("could not create bucket: %s", err.Error())
-	}
-
 	c := Controller{
 		serve:  config.Serve,
 		tpl:    config.Tpl,
-		bucket: bucketRepository,
+		bucket: config.Bucket,
 	}
 
 	router := mux.NewRouter()
