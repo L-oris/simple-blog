@@ -3,6 +3,8 @@ package inject
 import (
 	"net/http"
 
+	"github.com/L-oris/yabb/repository/bucketrepository"
+
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -17,8 +19,9 @@ func controllers() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return rootcontroller.New(
 				&rootcontroller.Config{
-					Tpl:   ctn.Get(types.Templates.String()).(*tpl.TPL),
-					Serve: ctn.Get(types.FileServer.String()).(func(w http.ResponseWriter, r *http.Request, fileName string)),
+					Tpl:    ctn.Get(types.Templates.String()).(*tpl.TPL),
+					Serve:  ctn.Get(types.FileServer.String()).(func(w http.ResponseWriter, r *http.Request, fileName string)),
+					Bucket: ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
 				}), nil
 		},
 	}

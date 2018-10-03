@@ -22,6 +22,7 @@ const maxUploadSize = 2 * 1024 * 1024 // MB
 type Config struct {
 	Tpl tpl.Template
 	Serve
+	Bucket *bucketrepository.Repository
 }
 
 type Controller struct {
