@@ -32,6 +32,7 @@ func controllers() []di.Def {
 			return postcontroller.New(&postcontroller.Config{
 				Repository: ctn.Get(types.PostRepository.String()).(*postrepository.Repository),
 				Tpl:        ctn.Get(types.Templates.String()).(*tpl.TPL),
+				Bucket:     ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
 			}), nil
 		},
 	}

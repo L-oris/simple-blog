@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
@@ -12,12 +13,14 @@ import (
 type Config struct {
 	Repository *postrepository.Repository
 	Tpl        tpl.Template
+	Bucket     *bucketrepository.Repository
 }
 
 type Controller struct {
+	Router     *mux.Router
+	bucket     *bucketrepository.Repository
 	repository *postrepository.Repository
 	tpl        tpl.Template
-	Router     *mux.Router
 }
 
 // New creates a new controller and registers the routes
@@ -25,6 +28,7 @@ func New(config *Config) Controller {
 	c := Controller{
 		repository: config.Repository,
 		tpl:        config.Tpl,
+		bucket:     config.Bucket,
 	}
 
 	router := mux.NewRouter()
