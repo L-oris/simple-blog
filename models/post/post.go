@@ -13,7 +13,7 @@ type Post struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	Content   string    `json:"content"`
-	ImageID   string    `json:"imageID"`
+	Picture   string    `json:"picture"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 

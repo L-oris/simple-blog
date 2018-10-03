@@ -40,7 +40,7 @@ func (r Repository) GetAll() ([]post.Post, error) {
 	var result []post.Post
 	for rows.Next() {
 		post := post.Post{}
-		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.ImageID, &post.CreatedAt); err != nil {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Picture, &post.CreatedAt); err != nil {
 			logger.Log.Error("scan error: %s", err.Error())
 			return nil, err
 		}
@@ -57,7 +57,7 @@ func (r Repository) GetByID(id int) (post.Post, error) {
 	row := r.DB.QueryRow(sqlStatement, id)
 
 	result := post.Post{}
-	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.ImageID, &result.CreatedAt); err != nil {
+	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.Picture, &result.CreatedAt); err != nil {
 		logger.Log.Warning("scan error: %s", err.Error())
 		return post.Post{}, err
 	}
@@ -69,8 +69,8 @@ func (r Repository) GetByID(id int) (post.Post, error) {
 // The following fields cannot be managed externally: ID, CreatedAt
 // Returns the new Post
 func (r Repository) Add(partialPost post.Post) (post.Post, error) {
-	sqlStatement := `INSERT INTO Posts (Title, Content, ImageID) VALUES (?, ?, ?);`
-	queryReturn, err := r.DB.Exec(sqlStatement, partialPost.Title, partialPost.Content, partialPost.ImageID)
+	sqlStatement := `INSERT INTO Posts (Title, Content, Picture) VALUES (?, ?, ?);`
+	queryReturn, err := r.DB.Exec(sqlStatement, partialPost.Title, partialPost.Content, partialPost.Picture)
 	if err != nil {
 		logger.Log.Warning("insert error: %s", err.Error())
 		return post.Post{}, err
@@ -93,8 +93,8 @@ func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error)
 		return post.Post{}, err
 	}
 
-	sqlStatement := `UPDATE Posts SET Title=?, Content=?, ImageID=? WHERE ID=?`
-	_, err = r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.ImageID, dbPost.ID)
+	sqlStatement := `UPDATE Posts SET Title=?, Content=?, Picture=? WHERE ID=?`
+	_, err = r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.Picture, dbPost.ID)
 	if err != nil {
 		logger.Log.Error("cannot update post: %s", err.Error())
 		return post.Post{}, nil
