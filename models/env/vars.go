@@ -7,20 +7,22 @@ import (
 )
 
 type config struct {
-	Port string `env:"PORT" envDefault:"8080"`
-	DB   string `env:"DB,required"`
+	Port                   string `env:"PORT" envDefault:"8080"`
+	DB                     string `env:"DB,required"`
+	GoogleCloudCredentials string `env:"GOOGLE_APPLICATION_CREDENTIALS,required"`
+	BucketName             string `env:"GOOGLE_CLOUD_BUCKET,required"`
 }
 
-// Vars contains all the env variables in use for the project
+// Vars stores all env variables in use for the project
 var Vars config
 
 func init() {
 	if err := godotenv.Load(); err != nil {
-		logger.Log.Warning("File .env not found, reading configuration from ENV")
+		logger.Log.Warningf("File .env not found, reading configuration from ENV: %s", err.Error())
 	}
 
 	if err := env.Parse(&Vars); err != nil {
-		logger.Log.Fatal("Failed to parse ENV")
+		logger.Log.Fatalf("Failed to parse ENV: %s", err.Error())
 	}
 
 	logger.Log.Debug("env variables loaded successfully")

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/L-oris/yabb/inject/types"
+	"github.com/L-oris/yabb/models/env"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/db"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -27,7 +28,7 @@ func repositories() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			repo, err := bucketrepository.New(
 				bucketrepository.Config{
-					BucketName: "yabb",
+					BucketName: env.Vars.BucketName,
 				},
 			)
 			if err != nil {

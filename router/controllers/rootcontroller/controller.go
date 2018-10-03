@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/http"
-	"path/filepath"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
@@ -16,7 +15,6 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-const uploadPath = "./tmp"
 const maxUploadSize = 2 * 1024 * 1024 // MB
 
 type Config struct {
@@ -112,8 +110,7 @@ func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
 
 	fileEndings, _ := mime.ExtensionsByType(contentType)
 	fileName := uuid.NewV4().String()
-	newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
-	logger.Log.Debug("ContentType: %s, File: %s\n", contentType, newPath)
+	logger.Log.Debug("ContentType: %s, File: %s", contentType, fileName+fileEndings[0])
 
 	err = c.bucket.Write(fileName, fileBytes)
 	if err != nil {
