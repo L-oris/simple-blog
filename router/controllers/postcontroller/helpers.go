@@ -2,6 +2,9 @@ package postcontroller
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 
@@ -36,4 +39,37 @@ func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.
 	}
 
 	return partialPost, nil
+}
+
+func parseMultiPartImage(req *http.Request, inputField string) (contentType string, fileBytes []byte, err error) {
+	var multipartFile multipart.File
+	multipartFile, _, err = req.FormFile(inputField)
+	if err != nil {
+		logger.Log.Error("could not get form from template: %s", err.Error())
+		return "", nil, err
+	}
+	defer multipartFile.Close()
+
+	fileBytes, err = ioutil.ReadAll(multipartFile)
+	if err != nil {
+		logger.Log.Debug("invalid file uploaded: %s", err.Error())
+		return "", nil, err
+	}
+
+	contentType = http.DetectContentType(fileBytes)
+	if ok := checkImageType(contentType); !ok {
+		return "", nil, fmt.Errorf("invalid fileType provided: %s", err.Error())
+	}
+
+	return
+}
+
+func checkImageType(fileType string) bool {
+	if fileType != "image/jpeg" &&
+		fileType != "image/jpg" &&
+		fileType != "image/gif" &&
+		fileType != "image/png" {
+		return false
+	}
+	return true
 }
