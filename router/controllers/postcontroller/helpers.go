@@ -27,7 +27,7 @@ func getPostIDFromURL(req *http.Request) (int, error) {
 
 // getPartialPostFromForm parses request form and returns a post with Title & Content (other values are zeroed)
 // 'checkTitleAndContent' param defines whether title & content should be mandatory
-func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.Post, error) {
+func getPostFromForm(req *http.Request, checkTitleAndContent bool) (post.Post, error) {
 	partialPost := post.Post{
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
@@ -41,7 +41,7 @@ func getPartialPostFromForm(req *http.Request, checkTitleAndContent bool) (post.
 	return partialPost, nil
 }
 
-func parseMultiPartImage(req *http.Request, inputField string) (contentType string, fileBytes []byte, err error) {
+func getImageFromForm(req *http.Request, inputField string) (contentType string, fileBytes []byte, err error) {
 	var multipartFile multipart.File
 	multipartFile, _, err = req.FormFile(inputField)
 	if err != nil {
