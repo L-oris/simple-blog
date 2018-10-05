@@ -3,6 +3,7 @@ package postcontroller
 import (
 	"net/http"
 
+	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -48,6 +49,7 @@ func New(config *Config) Controller {
 // ping checks db connection
 func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	if err := c.repository.Ping(); err != nil {
+		logger.Log.Errorf("db not connected: %s", err.Error())
 		httperror.InternalServer(w, "db not connected")
 		return
 	}

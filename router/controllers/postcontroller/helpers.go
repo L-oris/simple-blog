@@ -18,7 +18,8 @@ func getPostIDFromURL(req *http.Request) (int, error) {
 	vars := mux.Vars(req)
 	pID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		logger.Log.Warning("bad id received" + string(pID))
+		err = fmt.Errorf("bad id received" + string(pID))
+		logger.Log.Warning(err.Error())
 		return 0, err
 	}
 
@@ -34,7 +35,6 @@ func getPostFromForm(req *http.Request, checkTitleAndContent bool) (post.Post, e
 	}
 
 	if checkTitleAndContent && !partialPost.HasTitleAndContent() {
-		logger.Log.Warning("post missing Title or Content")
 		return post.Post{}, errors.New("empty title or content provided")
 	}
 
@@ -45,20 +45,22 @@ func getImageFromForm(req *http.Request, inputField string) (contentType string,
 	var multipartFile multipart.File
 	multipartFile, _, err = req.FormFile(inputField)
 	if err != nil {
-		logger.Log.Error("could not get form from template: %s", err.Error())
+		err = fmt.Errorf("could not get form from template: %s", err.Error())
+		logger.Log.Error(err.Error())
 		return "", nil, err
 	}
 	defer multipartFile.Close()
 
 	fileBytes, err = ioutil.ReadAll(multipartFile)
 	if err != nil {
-		logger.Log.Debug("invalid file uploaded: %s", err.Error())
+		err = fmt.Errorf("invalid file uploaded: %s", err.Error())
+		logger.Log.Debug(err.Error())
 		return "", nil, err
 	}
 
 	contentType = http.DetectContentType(fileBytes)
 	if ok := checkImageType(contentType); !ok {
-		err := fmt.Errorf("invalid fileType provided: %s", contentType)
+		err = fmt.Errorf("invalid fileType provided: %s", contentType)
 		logger.Log.Debug(err.Error())
 		return "", nil, err
 	}
