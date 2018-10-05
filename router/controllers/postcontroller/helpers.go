@@ -58,7 +58,9 @@ func getImageFromForm(req *http.Request, inputField string) (contentType string,
 
 	contentType = http.DetectContentType(fileBytes)
 	if ok := checkImageType(contentType); !ok {
-		return "", nil, fmt.Errorf("invalid fileType provided: %s", err.Error())
+		err := fmt.Errorf("invalid fileType provided: %s", contentType)
+		logger.Log.Debug(err.Error())
+		return "", nil, err
 	}
 
 	return

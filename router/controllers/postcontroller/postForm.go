@@ -35,11 +35,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request) (postForm, error) {
 
 	contentType, fileBytes, err := getImageFromForm(req, "postImage")
 	if err != nil {
-		if err != nil {
-			err = fmt.Errorf("invalid file type provided: %s", err.Error())
-			logger.Log.Debug(err.Error())
-			return postForm{}, err
-		}
+		return postForm{}, err
 	}
 	fileEndings, _ := mime.ExtensionsByType(contentType)
 	fileName := uuid.NewV4().String() + fileEndings[0]
