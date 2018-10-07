@@ -34,6 +34,12 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
 
+	oldPost, err := c.repository.GetByID(pID)
+	if err != nil {
+		httperror.BadRequest(w, err.Error())
+		return
+	}
+
 	postForm, err := parsePostForm(w, req, false)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
@@ -52,7 +58,10 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		// TODO: delete old from bucket
+		if err = c.bucket.Delete(oldPost.Picture); err != nil {
+			httperror.InternalServer(w, err.Error())
+			return
+		}
 	}
 
 	w.Header().Set("Location", "/post/"+post.ID)

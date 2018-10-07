@@ -82,6 +82,7 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 }
 
 // UpdateByID updates only provided fields in existing DB Post
+// Returns updated Post
 func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error) {
 	dbPost, err := r.GetByID(id)
 	if err != nil {
