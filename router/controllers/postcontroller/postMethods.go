@@ -7,7 +7,7 @@ import (
 )
 
 func (c Controller) new(w http.ResponseWriter, req *http.Request) {
-	postForm, err := parsePostForm(w, req)
+	postForm, err := parsePostForm(w, req, true)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
