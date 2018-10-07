@@ -34,11 +34,11 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
 
-	partialPost, err := getPostFromForm(req, false)
-	if err != nil {
-		httperror.BadRequest(w, "invalid data provided")
-		return
-	}
+	partialPost := getPostFromForm(req)
+	// if err != nil {
+	// 	httperror.BadRequest(w, "invalid data provided")
+	// 	return
+	// }
 
 	post, err := c.repository.UpdateByID(pID, partialPost)
 

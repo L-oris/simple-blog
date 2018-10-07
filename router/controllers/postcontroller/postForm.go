@@ -29,42 +29,42 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 		return postForm{}, err
 	}
 
-	partialPost, err := getPostFromForm(req, checkRequiredFields)
-	if err != nil {
-		logger.Log.Debug(err.Error())
-		return postForm{}, err
+	post := getPostFromForm(req)
+	if checkRequiredFields && !post.HasTitleAndContent() {
+		return postForm{}, errors.New("empty title or content provided")
 	}
 
 	contentType, fileBytes, err := getImageFromForm(req, "postImage")
 	if err != nil {
 		return postForm{}, err
 	}
-	if checkRequiredFields && len(fileBytes) == 0 {
-		return postForm{}, fmt.Errorf("picture required for post")
+	if len(fileBytes) == 0 {
+		if checkRequiredFields {
+			return postForm{}, fmt.Errorf("no picture provided")
+		}
+
+		return postForm{
+			post:      post,
+			fileBytes: nil,
+		}, nil
 	}
 
 	fileEndings, _ := mime.ExtensionsByType(contentType)
 	fileName := uuid.NewV4().String() + fileEndings[0]
-	partialPost.Picture = fileName
-	logger.Log.Debug("ContentType: %s, File: %s", contentType, fileName)
+	post.Picture = fileName
 
+	logger.Log.Debug("ContentType: %s, File: %s", contentType, fileName)
 	return postForm{
-		post:      partialPost,
+		post:      post,
 		fileBytes: fileBytes,
 	}, nil
 }
 
-func getPostFromForm(req *http.Request, checkRequiredFields bool) (post.Post, error) {
-	partialPost := post.Post{
+func getPostFromForm(req *http.Request) post.Post {
+	return post.Post{
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
 	}
-
-	if checkRequiredFields && !partialPost.HasTitleAndContent() {
-		return post.Post{}, errors.New("empty title or content provided")
-	}
-
-	return partialPost, nil
 }
 
 func getImageFromForm(req *http.Request, inputField string) (contentType string, fileBytes []byte, err error) {
