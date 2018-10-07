@@ -65,12 +65,21 @@ func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
 
-	if err = c.repository.DeleteByID(pID); err != nil {
-		httperror.BadRequest(w, "cannot delete post "+string(pID))
+	post, err := c.repository.GetByID(pID)
+	if err != nil {
+		httperror.BadRequest(w, err.Error())
 		return
 	}
 
-	// TODO: delete old from bucket
+	if err = c.bucket.Delete(post.Picture); err != nil {
+		httperror.InternalServer(w, err.Error())
+		return
+	}
+
+	if err = c.repository.DeleteByID(pID); err != nil {
+		httperror.InternalServer(w, err.Error())
+		return
+	}
 
 	w.Header().Set("Location", "/post/all")
 	w.WriteHeader(http.StatusSeeOther)

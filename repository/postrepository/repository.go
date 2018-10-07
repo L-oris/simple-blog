@@ -2,6 +2,7 @@ package postrepository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
@@ -42,7 +43,7 @@ func (r Repository) GetAll() ([]post.Post, error) {
 		post := post.Post{}
 		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Picture, &post.CreatedAt); err != nil {
 			logger.Log.Error("scan error: %s", err.Error())
-			return nil, err
+			return nil, fmt.Errorf("cannot get posts")
 		}
 		result = append(result, post)
 	}
@@ -59,7 +60,7 @@ func (r Repository) GetByID(id int) (post.Post, error) {
 	result := post.Post{}
 	if err := row.Scan(&result.ID, &result.Title, &result.Content, &result.Picture, &result.CreatedAt); err != nil {
 		logger.Log.Warning("scan error: %s", err.Error())
-		return post.Post{}, err
+		return post.Post{}, fmt.Errorf("cannot get post %s", string(id))
 	}
 
 	return result, nil

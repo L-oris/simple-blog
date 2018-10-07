@@ -1,6 +1,7 @@
 package bucketrepository
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/L-oris/yabb/logger"
@@ -64,4 +65,14 @@ func (c Repository) Read(fileName string) ([]byte, error) {
 	}
 
 	return newFile, nil
+}
+
+// Delete deletes a file from bucket
+func (c Repository) Delete(fileName string) error {
+	if err := c.bucket.Delete(ctx, fileName); err != nil {
+		logger.Log.Errorf("delete file %s error: %s", fileName, err.Error())
+		return fmt.Errorf("cannot not delete file %s", fileName)
+	}
+
+	return nil
 }
