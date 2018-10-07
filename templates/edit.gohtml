@@ -5,11 +5,12 @@
 {{define "content"}}
 <div>
     <h1>Finally editing post {{.Title}}</h1>
-    <form action="/post/{{.ID}}/update" method="post">
+    <form action="/post/{{.ID}}/update" method="post" enctype="multipart/form-data">
         <h4>Title</h4>
         <input type="text" name="title" value="{{.Title}}">
         <h4>Content</h4>
         <input type="text" name="content" value="{{.Content}}">
+        <input type="file" name="postImage">
         {{if .Picture}}
             <img src="/bucket/{{.Picture}}"/>
         {{end}}

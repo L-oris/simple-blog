@@ -34,13 +34,26 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 		httperror.BadRequest(w, "bad id provided: "+string(pID))
 	}
 
-	partialPost := getPostFromForm(req)
-	// if err != nil {
-	// 	httperror.BadRequest(w, "invalid data provided")
-	// 	return
-	// }
+	postForm, err := parsePostForm(w, req, false)
+	if err != nil {
+		httperror.BadRequest(w, err.Error())
+		return
+	}
 
-	post, err := c.repository.UpdateByID(pID, partialPost)
+	post, err := c.repository.UpdateByID(pID, postForm.post)
+	if err != nil {
+		httperror.InternalServer(w, err.Error())
+		return
+	}
+
+	if len(postForm.fileBytes) > 0 {
+		if err = c.bucket.Write(postForm.post.Picture, postForm.fileBytes); err != nil {
+			httperror.InternalServer(w, "failed to save file")
+			return
+		}
+
+		// TODO: delete old from bucket
+	}
 
 	w.Header().Set("Location", "/post/"+post.ID)
 	w.WriteHeader(http.StatusSeeOther)
@@ -57,9 +70,8 @@ func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// TODO: delete old from bucket
+
 	w.Header().Set("Location", "/post/all")
 	w.WriteHeader(http.StatusSeeOther)
 }
-
-// TODO:
-// * delete from bucket when deleting post
