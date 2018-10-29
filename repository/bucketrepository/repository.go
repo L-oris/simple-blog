@@ -71,7 +71,7 @@ func (c Repository) Read(fileName string) ([]byte, error) {
 func (c Repository) Delete(fileName string) error {
 	if err := c.bucket.Delete(ctx, fileName); err != nil {
 		logger.Log.Errorf("delete file %s error: %s", fileName, err.Error())
-		return fmt.Errorf("cannot not delete file %s", fileName)
+		return fmt.Errorf("cannot delete file %s", fileName)
 	}
 
 	return nil

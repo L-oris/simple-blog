@@ -2,7 +2,7 @@ package rootcontroller
 
 import "net/http"
 
-// Serve defined a func used to serve files
+// Serve defines a func used to serve files
 type Serve func(w http.ResponseWriter, r *http.Request, fileName string)
 
 func mockServe(result *mockServeResult) Serve {
