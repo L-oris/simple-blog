@@ -20,5 +20,6 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 	}
+	logger.Log.Infof("server listening on port %s", env.Vars.Port)
 	logger.Log.Fatal(server.ListenAndServe())
 }
