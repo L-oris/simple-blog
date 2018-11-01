@@ -10,6 +10,7 @@ func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
 	posts, err := c.repository.GetAll()
 	if err != nil {
 		httperror.InternalServer(w, err.Error())
+		return
 	}
 	c.tpl.Render(w, "all.gohtml", posts)
 }
@@ -22,11 +23,13 @@ func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
+		return
 	}
 
 	post, err := c.repository.GetByID(pID)
 	if err != nil {
 		httperror.NotFound(w, err.Error())
+		return
 	}
 
 	c.tpl.Render(w, "byID.gohtml", post)
@@ -36,11 +39,13 @@ func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
+		return
 	}
 
 	post, err := c.repository.GetByID(pID)
 	if err != nil {
 		httperror.NotFound(w, err.Error())
+		return
 	}
 
 	c.tpl.Render(w, "edit.gohtml", post)

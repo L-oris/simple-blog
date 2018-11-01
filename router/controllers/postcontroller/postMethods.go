@@ -32,6 +32,7 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
+		return
 	}
 
 	oldPost, err := c.repository.GetByID(pID)
@@ -72,6 +73,7 @@ func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
+		return
 	}
 
 	post, err := c.repository.GetByID(pID)
