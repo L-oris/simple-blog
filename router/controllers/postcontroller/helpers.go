@@ -14,7 +14,7 @@ func getPostIDFromURL(req *http.Request) (int, error) {
 	vars := mux.Vars(req)
 	pID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		err = fmt.Errorf("bad id received" + string(pID))
+		err = fmt.Errorf("bad id received %d", pID)
 		logger.Log.Warning(err.Error())
 		return 0, err
 	}

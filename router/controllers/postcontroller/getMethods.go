@@ -9,7 +9,7 @@ import (
 func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
 	posts, err := c.repository.GetAll()
 	if err != nil {
-		httperror.BadRequest(w, "cannot get posts")
+		httperror.InternalServer(w, err.Error())
 	}
 	c.tpl.Render(w, "all.gohtml", posts)
 }
@@ -21,12 +21,12 @@ func (c Controller) renderNew(w http.ResponseWriter, req *http.Request) {
 func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
-		httperror.BadRequest(w, "bad id provided: "+string(pID))
+		httperror.BadRequest(w, err.Error())
 	}
 
 	post, err := c.repository.GetByID(pID)
 	if err != nil {
-		httperror.NotFound(w, "Post "+string(pID)+" not found")
+		httperror.NotFound(w, err.Error())
 	}
 
 	c.tpl.Render(w, "byID.gohtml", post)
@@ -35,12 +35,12 @@ func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
-		httperror.BadRequest(w, "bad id provided: "+string(pID))
+		httperror.BadRequest(w, err.Error())
 	}
 
 	post, err := c.repository.GetByID(pID)
 	if err != nil {
-		httperror.NotFound(w, "Post "+string(pID)+" not found")
+		httperror.NotFound(w, err.Error())
 	}
 
 	c.tpl.Render(w, "edit.gohtml", post)

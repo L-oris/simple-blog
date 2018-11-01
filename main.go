@@ -26,3 +26,4 @@ func main() {
 
 // TODO: 'post.HasTitleAndContent' to 'post.CheckMandatoryFields'
 // TODO: parsePostForm, first line
+// TODO: move 'tpl' and 'env' packages out of 'models' directory
