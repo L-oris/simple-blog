@@ -90,7 +90,7 @@ func getImageFromForm(req *http.Request, inputField string) (contentType string,
 		return "", nil, err
 	}
 
-	return
+	return contentType, fileBytes, nil
 }
 
 func checkImageType(fileType string) bool {

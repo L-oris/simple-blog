@@ -3,8 +3,6 @@ package rootcontroller
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"mime"
 	"net/http"
 
 	"github.com/L-oris/yabb/logger"
@@ -12,7 +10,6 @@ import (
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
-	"github.com/satori/go.uuid"
 )
 
 const maxUploadSize = 2 * 1024 * 1024 // MB
@@ -42,9 +39,7 @@ func New(config *Config) Controller {
 	router.PathPrefix("/static/").Handler(c.static())
 	router.HandleFunc("/", c.home).Methods("GET")
 	router.HandleFunc("/ping", c.ping).Methods("GET")
-	router.HandleFunc("/upload", c.uploadGet).Methods("GET")
-	router.HandleFunc("/upload", c.uploadPost).Methods("POST")
-	router.HandleFunc("/bucket/{id}", c.serveBucket).Methods("GET")
+	router.HandleFunc("/bucket/{id}", c.serveBucketFileById).Methods("GET")
 
 	c.Router = router
 	return c
@@ -70,62 +65,7 @@ func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("pong"))
 }
 
-func (c Controller) uploadGet(w http.ResponseWriter, req *http.Request) {
-	c.tpl.Render(w, "upload.gohtml", nil)
-}
-
-func (c Controller) uploadPost(w http.ResponseWriter, req *http.Request) {
-	req.Body = http.MaxBytesReader(w, req.Body, maxUploadSize)
-	if err := req.ParseMultipartForm(maxUploadSize); err != nil {
-		logger.Log.Debug("uploaded file is too big: %s", err.Error())
-		httperror.BadRequest(w, "file provided is too large")
-		return
-	}
-
-	multipartFile, _, err := req.FormFile("postImage")
-	if err != nil {
-		logger.Log.Error("could not get form from template: %s", err.Error())
-		httperror.InternalServer(w, "invalid template form")
-		return
-	}
-	defer multipartFile.Close()
-
-	fileBytes, err := ioutil.ReadAll(multipartFile)
-	if err != nil {
-		logger.Log.Debug("invalid file uploaded: %s", err.Error())
-		httperror.BadRequest(w, "invalid file provided")
-		return
-	}
-
-	contentType := http.DetectContentType(fileBytes)
-	if ok := checkContentType(contentType); !ok {
-		httperror.BadRequest(w, "invalid fileType provided")
-		return
-	}
-
-	fileEndings, _ := mime.ExtensionsByType(contentType)
-	fileName := uuid.NewV4().String()
-	logger.Log.Debug("ContentType: %s, File: %s", contentType, fileName+fileEndings[0])
-
-	err = c.bucket.Write(fileName, fileBytes)
-	if err != nil {
-		httperror.InternalServer(w, "cannot save file")
-		return
-	}
-	w.Write([]byte("uploading ok"))
-}
-
-func checkContentType(fileType string) bool {
-	if fileType != "image/jpeg" &&
-		fileType != "image/jpg" &&
-		fileType != "image/gif" &&
-		fileType != "image/png" {
-		return false
-	}
-	return true
-}
-
-func (c Controller) serveBucket(w http.ResponseWriter, req *http.Request) {
+func (c Controller) serveBucketFileById(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	imageID := vars["id"]
 
