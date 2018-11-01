@@ -27,8 +27,8 @@ var bufpool *bpool.BufferPool
 var mainTmpl = `{{define "main" }} {{ template "base" . }} {{ end }}`
 
 func loadConfiguration() {
-	config.TemplateLayoutPath = "templates/layouts/"
-	config.TemplateIncludePath = "templates/"
+	config.TemplateLayoutPath = "foreign/templates/layouts/"
+	config.TemplateIncludePath = "foreign/templates/"
 }
 
 func loadTemplates() error {

@@ -24,6 +24,7 @@ func main() {
 	logger.Log.Fatal(server.ListenAndServe())
 }
 
-// TODO: move 'tpl' and 'env' packages out of 'models' directory
+// TODO: move 'tmp' directory away from root
+// TODO: rename 'tpl' package to 'templateloader'
 // TODO: move away post actions from postRepository (create separate engine)
 // TODO: 'httperror' package should render error template with error message we receive
