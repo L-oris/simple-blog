@@ -5,7 +5,7 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/L-oris/yabb/foreign/tpl"
+	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/router/httperror"
@@ -15,27 +15,27 @@ import (
 const maxUploadSize = 2 * 1024 * 1024 // MB
 
 type Config struct {
-	Tpl tpl.Template
+	Template template.Template
 	Serve
 	Bucket *bucketrepository.Repository
 	DB     *sql.DB
 }
 
 type Controller struct {
-	Router *mux.Router
-	serve  Serve
-	tpl    tpl.Template
-	bucket *bucketrepository.Repository
-	db     *sql.DB
+	Router   *mux.Router
+	serve    Serve
+	template template.Template
+	bucket   *bucketrepository.Repository
+	db       *sql.DB
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) Controller {
 	c := Controller{
-		serve:  config.Serve,
-		tpl:    config.Tpl,
-		bucket: config.Bucket,
-		db:     config.DB,
+		serve:    config.Serve,
+		template: config.Template,
+		bucket:   config.Bucket,
+		db:       config.DB,
 	}
 
 	router := mux.NewRouter()
@@ -77,7 +77,7 @@ func (c Controller) static() http.Handler {
 
 // home serves the Home page
 func (c Controller) home(w http.ResponseWriter, req *http.Request) {
-	c.tpl.Render(w, "home.gohtml", nil)
+	c.template.Render(w, "home.gohtml", nil)
 }
 
 // serveBucketFileByID serves files from GC bucket

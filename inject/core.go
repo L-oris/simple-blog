@@ -3,7 +3,7 @@ package inject
 import (
 	"net/http"
 
-	"github.com/L-oris/yabb/foreign/tpl"
+	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/repository/db"
 	"github.com/sarulabs/di"
@@ -11,9 +11,9 @@ import (
 
 func core() []di.Def {
 	templates := di.Def{
-		Name: types.Templates.String(),
+		Name: types.Template.String(),
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &tpl.TPL{}, nil
+			return &template.TPL{}, nil
 		},
 	}
 

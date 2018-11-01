@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/L-oris/yabb/foreign/tpl"
+	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -19,10 +19,10 @@ func controllers() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return rootcontroller.New(
 				&rootcontroller.Config{
-					Tpl:    ctn.Get(types.Templates.String()).(*tpl.TPL),
-					Serve:  ctn.Get(types.FileServer.String()).(func(w http.ResponseWriter, r *http.Request, fileName string)),
-					Bucket: ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
-					DB:     ctn.Get(types.DB.String()).(*sql.DB),
+					Template: ctn.Get(types.Template.String()).(*template.TPL),
+					Serve:    ctn.Get(types.FileServer.String()).(func(w http.ResponseWriter, r *http.Request, fileName string)),
+					Bucket:   ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
+					DB:       ctn.Get(types.DB.String()).(*sql.DB),
 				}), nil
 		},
 	}
@@ -32,7 +32,7 @@ func controllers() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return postcontroller.New(&postcontroller.Config{
 				Repository: ctn.Get(types.PostRepository.String()).(*postrepository.Repository),
-				Tpl:        ctn.Get(types.Templates.String()).(*tpl.TPL),
+				Template:   ctn.Get(types.Template.String()).(*template.TPL),
 				Bucket:     ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
 			}), nil
 		},

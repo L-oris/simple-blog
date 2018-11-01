@@ -14,5 +14,5 @@ var (
 	RootController   = t{"rootcontroller"}
 	PostController   = t{"postcontroller"}
 	Router           = t{"router"}
-	Templates        = t{"templates"}
+	Template         = t{"template"}
 )
