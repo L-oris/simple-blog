@@ -3,8 +3,8 @@ package db
 import (
 	"database/sql"
 
+	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/models/env"
 	_ "github.com/go-sql-driver/mysql"
 )
 

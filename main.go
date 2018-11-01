@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/inject"
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/models/env"
 )
 
 func main() {

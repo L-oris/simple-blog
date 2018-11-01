@@ -5,8 +5,8 @@ import (
 	"flag"
 	"net/http"
 
+	"github.com/L-oris/yabb/foreign/tpl"
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"

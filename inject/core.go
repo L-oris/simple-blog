@@ -3,8 +3,8 @@ package inject
 import (
 	"net/http"
 
+	"github.com/L-oris/yabb/foreign/tpl"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/db"
 	"github.com/sarulabs/di"
 )

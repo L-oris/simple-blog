@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/models/env"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/sarulabs/di"

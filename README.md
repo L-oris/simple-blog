@@ -16,3 +16,5 @@
 -   deploy to Google Cloud, also DB
 -   docker
 -   circleCI
+-   try out Go Cloud's compile-time DI 
+    - https://blog.golang.org/wire

@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/L-oris/yabb/foreign/tpl"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/models/tpl"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"

@@ -1,7 +1,7 @@
 package postcontroller
 
 import (
-	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/foreign/tpl"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/gorilla/mux"
