@@ -6,11 +6,11 @@ import (
 	"github.com/L-oris/yabb/logger"
 )
 
-// TPL implements Template interface
-type TPL struct{}
+// Template implements Renderer interface
+type Template struct{}
 
 // Render gets the template, fills it with data and sends it to ResponseWriter
-func (tpl *TPL) Render(w http.ResponseWriter, templateName string, data interface{}) {
+func (tpl *Template) Render(w http.ResponseWriter, templateName string, data interface{}) {
 	tmpl, ok := templates[templateName]
 	if !ok {
 		logger.Log.Errorf("template %s does not exist", templateName)

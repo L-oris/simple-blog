@@ -13,7 +13,7 @@ func core() []di.Def {
 	templates := di.Def{
 		Name: types.Template.String(),
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &template.TPL{}, nil
+			return &template.Template{}, nil
 		},
 	}
 

@@ -15,7 +15,7 @@ import (
 const maxUploadSize = 2 * 1024 * 1024 // MB
 
 type Config struct {
-	Template template.Template
+	Renderer template.Renderer
 	Serve
 	Bucket *bucketrepository.Repository
 	DB     *sql.DB
@@ -24,7 +24,7 @@ type Config struct {
 type Controller struct {
 	Router   *mux.Router
 	serve    Serve
-	template template.Template
+	renderer template.Renderer
 	bucket   *bucketrepository.Repository
 	db       *sql.DB
 }
@@ -33,7 +33,7 @@ type Controller struct {
 func New(config *Config) Controller {
 	c := Controller{
 		serve:    config.Serve,
-		template: config.Template,
+		renderer: config.Renderer,
 		bucket:   config.Bucket,
 		db:       config.DB,
 	}
@@ -77,7 +77,7 @@ func (c Controller) static() http.Handler {
 
 // home serves the Home page
 func (c Controller) home(w http.ResponseWriter, req *http.Request) {
-	c.template.Render(w, "home.gohtml", nil)
+	c.renderer.Render(w, "home.gohtml", nil)
 }
 
 // serveBucketFileByID serves files from GC bucket

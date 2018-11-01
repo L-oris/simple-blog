@@ -19,7 +19,7 @@ func controllers() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return rootcontroller.New(
 				&rootcontroller.Config{
-					Template: ctn.Get(types.Template.String()).(*template.TPL),
+					Renderer: ctn.Get(types.Template.String()).(*template.Template),
 					Serve:    ctn.Get(types.FileServer.String()).(func(w http.ResponseWriter, r *http.Request, fileName string)),
 					Bucket:   ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
 					DB:       ctn.Get(types.DB.String()).(*sql.DB),
@@ -32,7 +32,7 @@ func controllers() []di.Def {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return postcontroller.New(&postcontroller.Config{
 				Repository: ctn.Get(types.PostRepository.String()).(*postrepository.Repository),
-				Template:   ctn.Get(types.Template.String()).(*template.TPL),
+				Renderer:   ctn.Get(types.Template.String()).(*template.Template),
 				Bucket:     ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
 			}), nil
 		},

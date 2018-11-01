@@ -12,11 +12,11 @@ func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
 		httperror.InternalServer(w, err.Error())
 		return
 	}
-	c.template.Render(w, "all.gohtml", posts)
+	c.renderer.Render(w, "all.gohtml", posts)
 }
 
 func (c Controller) renderNew(w http.ResponseWriter, req *http.Request) {
-	c.template.Render(w, "new.gohtml", nil)
+	c.renderer.Render(w, "new.gohtml", nil)
 }
 
 func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
@@ -32,7 +32,7 @@ func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	c.template.Render(w, "byID.gohtml", post)
+	c.renderer.Render(w, "byID.gohtml", post)
 }
 
 func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
@@ -48,5 +48,5 @@ func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	c.template.Render(w, "edit.gohtml", post)
+	c.renderer.Render(w, "edit.gohtml", post)
 }

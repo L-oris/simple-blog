@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-// Template allows templates to be rendered by name on 'http.ResponseWriter'
-type Template interface {
+// Renderer allows templates to be rendered by name on 'http.ResponseWriter'
+type Renderer interface {
 	Render(w http.ResponseWriter, name string, data interface{})
 }

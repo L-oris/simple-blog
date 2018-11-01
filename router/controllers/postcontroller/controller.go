@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Repository *postrepository.Repository
-	Template   template.Template
+	Renderer   template.Renderer
 	Bucket     *bucketrepository.Repository
 }
 
@@ -17,14 +17,14 @@ type Controller struct {
 	Router     *mux.Router
 	bucket     *bucketrepository.Repository
 	repository *postrepository.Repository
-	template   template.Template
+	renderer   template.Renderer
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) Controller {
 	c := Controller{
 		repository: config.Repository,
-		template:   config.Template,
+		renderer:   config.Renderer,
 		bucket:     config.Bucket,
 	}
 
