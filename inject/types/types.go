@@ -7,11 +7,12 @@ type t struct {
 func (t t) String() string { return t.value }
 
 var (
-	Templates        = t{"templates"}
-	FileServer       = t{"fileserver"}
 	BucketRepository = t{"bucketrepository"}
+	FileServer       = t{"fileserver"}
+	DB               = t{"db"}
 	PostRepository   = t{"postrepository"}
-	Router           = t{"router"}
 	RootController   = t{"rootcontroller"}
 	PostController   = t{"postcontroller"}
+	Router           = t{"router"}
+	Templates        = t{"templates"}
 )

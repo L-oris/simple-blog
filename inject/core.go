@@ -5,6 +5,7 @@ import (
 
 	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/models/tpl"
+	"github.com/L-oris/yabb/repository/db"
 	"github.com/sarulabs/di"
 )
 
@@ -23,7 +24,14 @@ func core() []di.Def {
 		},
 	}
 
+	db := di.Def{
+		Name: types.DB.String(),
+		Build: func(ctn di.Container) (interface{}, error) {
+			return db.BlogDB, nil
+		},
+	}
+
 	return []di.Def{
-		templates, fileserver,
+		templates, fileserver, db,
 	}
 }
