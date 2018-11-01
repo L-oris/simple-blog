@@ -2,6 +2,7 @@ package postrepository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/L-oris/yabb/logger"
@@ -42,8 +43,8 @@ func (r Repository) GetAll() ([]post.Post, error) {
 	for rows.Next() {
 		post := post.Post{}
 		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Picture, &post.CreatedAt); err != nil {
-			logger.Log.Error("scan error: %s", err.Error())
-			return nil, fmt.Errorf("cannot get posts")
+			logger.Log.Warningf("scan error: %s", err.Error())
+			return nil, errors.New("cannot get posts")
 		}
 		result = append(result, post)
 	}
@@ -74,7 +75,7 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 	queryReturn, err := r.DB.Exec(sqlStatement, partialPost.Title, partialPost.Content, partialPost.Picture)
 	if err != nil {
 		logger.Log.Warning("insert error: %s", err.Error())
-		return post.Post{}, err
+		return post.Post{}, errors.New("cannot add new post")
 	}
 
 	lastInsertID, _ := queryReturn.LastInsertId()
@@ -84,41 +85,38 @@ func (r Repository) Add(partialPost post.Post) (post.Post, error) {
 // UpdateByID updates only provided fields in existing DB Post
 // Returns updated Post
 func (r Repository) UpdateByID(id int, partialPost post.Post) (post.Post, error) {
+	defaultError := fmt.Errorf("cannot update post %d", id)
+
 	dbPost, err := r.GetByID(id)
 	if err != nil {
-		logger.Log.Warning("post ", string(id), "not found")
-		return post.Post{}, nil
+		return post.Post{}, err
 	}
 
 	if err = mergo.Merge(&dbPost, partialPost, mergo.WithOverride); err != nil {
-		logger.Log.Error("failed to merge posts: %s", err.Error())
-		return post.Post{}, err
+		logger.Log.Warningf("merge posts error: %s", err.Error())
+		return post.Post{}, defaultError
 	}
 
 	sqlStatement := `UPDATE Posts SET Title=?, Content=?, Picture=? WHERE ID=?`
 	_, err = r.DB.Exec(sqlStatement, dbPost.Title, dbPost.Content, dbPost.Picture, dbPost.ID)
 	if err != nil {
-		logger.Log.Error("cannot update post: %s", err.Error())
-		return post.Post{}, nil
+		logger.Log.Error("update post error: %s", err.Error())
+		return post.Post{}, defaultError
 	}
 
 	return r.GetByID(id)
 }
 
 // DeleteByID deletes post by ID
-// Returns an error if Post is not found
 func (r Repository) DeleteByID(id int) error {
-	_, err := r.GetByID(id)
-	if err != nil {
-		logger.Log.Warning("post ", string(id), "not found")
+	if _, err := r.GetByID(id); err != nil {
 		return err
 	}
 
 	sqlStatement := `DELETE FROM Posts WHERE ID=?`
-	_, err = r.DB.Exec(sqlStatement, id)
-	if err != nil {
-		logger.Log.Error("cannot delete post: %s", err.Error())
-		return err
+	if _, err := r.DB.Exec(sqlStatement, id); err != nil {
+		logger.Log.Error("delete post error: %s", err.Error())
+		return fmt.Errorf("cannot delete post %d", id)
 	}
 
 	return nil
