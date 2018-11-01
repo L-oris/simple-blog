@@ -1,6 +1,7 @@
 package tpl
 
 import (
+	"errors"
 	"html/template"
 	"path/filepath"
 
@@ -10,7 +11,9 @@ import (
 
 func init() {
 	loadConfiguration()
-	loadTemplates()
+	if err := loadTemplates(); err != nil {
+		logger.Log.Fatal(err.Error())
+	}
 }
 
 type templateConfig struct {
@@ -28,24 +31,29 @@ func loadConfiguration() {
 	config.TemplateIncludePath = "templates/"
 }
 
-func loadTemplates() {
+func loadTemplates() error {
+	defaultError := errors.New("could not load templates")
+
 	if templates == nil {
 		templates = make(map[string]*template.Template)
 	}
 
 	layoutFiles, err := filepath.Glob(config.TemplateLayoutPath + "*.gohtml")
 	if err != nil {
-		logger.Log.Fatal("get layoutFiles error: ", err)
+		logger.Log.Critical("get layoutFiles error: ", err)
+		return defaultError
 	}
 
 	includeFiles, err := filepath.Glob(config.TemplateIncludePath + "*.gohtml")
 	if err != nil {
-		logger.Log.Fatal("get includeFiles error: ", err)
+		logger.Log.Critical("get includeFiles error: ", err)
+		return defaultError
 	}
 
 	mainTemplate := template.New("main")
 	if mainTemplate, err = mainTemplate.Parse(mainTmpl); err != nil {
-		logger.Log.Fatal("parse error: ", err)
+		logger.Log.Critical("parse error: ", err)
+		return defaultError
 	}
 
 	for _, file := range includeFiles {
@@ -53,7 +61,8 @@ func loadTemplates() {
 		files := append(layoutFiles, file)
 		templates[fileName], err = mainTemplate.Clone()
 		if err != nil {
-			logger.Log.Fatal("clone error: ", err)
+			logger.Log.Critical("clone error: ", err)
+			return defaultError
 		}
 		templates[fileName] = template.Must(templates[fileName].ParseFiles(files...))
 	}
@@ -61,4 +70,5 @@ func loadTemplates() {
 	logger.Log.Debug("templates loading successful")
 	bufpool = bpool.NewBufferPool(64)
 	logger.Log.Debug("template buffer allocation successful")
+	return nil
 }
