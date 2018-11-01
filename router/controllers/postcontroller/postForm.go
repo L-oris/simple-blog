@@ -29,9 +29,9 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 		return postForm{}, err
 	}
 
-	post := getPostFromForm(req)
+	post := getFieldsFromForm(req)
 	if checkRequiredFields && !post.HasTitleAndContent() {
-		return postForm{}, errors.New("empty title or content provided")
+		return postForm{}, errors.New("missing mandatory fields for post")
 	}
 
 	contentType, fileBytes, err := getImageFromForm(req, "postImage")
@@ -40,7 +40,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 	}
 	if len(fileBytes) == 0 {
 		if checkRequiredFields {
-			return postForm{}, fmt.Errorf("no picture provided")
+			return postForm{}, fmt.Errorf("missing mandatory picture for post")
 		}
 
 		return postForm{
@@ -60,7 +60,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 	}, nil
 }
 
-func getPostFromForm(req *http.Request) post.Post {
+func getFieldsFromForm(req *http.Request) post.Post {
 	return post.Post{
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
