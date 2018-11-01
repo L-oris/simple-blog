@@ -26,3 +26,5 @@ func main() {
 
 // TODO: 'post.HasTitleAndContent' to 'post.CheckMandatoryFields'
 // TODO: parsePostForm, first line
+// TODO: postController, move 'ping' method to rootController?
+// TODO: inject DB, instead of importing it directly from package

@@ -1,6 +1,7 @@
 package rootcontroller
 
 import (
+	"database/sql"
 	"flag"
 	"net/http"
 
@@ -17,6 +18,7 @@ type Config struct {
 	Tpl tpl.Template
 	Serve
 	Bucket *bucketrepository.Repository
+	DB     *sql.DB
 }
 
 type Controller struct {
@@ -24,6 +26,7 @@ type Controller struct {
 	serve  Serve
 	tpl    tpl.Template
 	bucket *bucketrepository.Repository
+	db     *sql.DB
 }
 
 // New creates a new controller and registers the routes
@@ -32,16 +35,35 @@ func New(config *Config) Controller {
 		serve:  config.Serve,
 		tpl:    config.Tpl,
 		bucket: config.Bucket,
+		db:     config.DB,
 	}
 
 	router := mux.NewRouter()
-	router.PathPrefix("/static/").Handler(c.static())
 	router.HandleFunc("/", c.home).Methods("GET")
 	router.HandleFunc("/ping", c.ping).Methods("GET")
+	router.HandleFunc("/pingDB", c.pingDB).Methods("GET")
+	router.PathPrefix("/static/").Handler(c.static())
 	router.HandleFunc("/bucket/{id}", c.serveBucketFileByID).Methods("GET")
 
 	c.Router = router
 	return c
+}
+
+// ping is used for health check on the server
+func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
+	logger.Log.Debug("ping pong request - server")
+	w.Write([]byte("pong - server"))
+}
+
+// ping is used for health check on the database
+func (c Controller) pingDB(w http.ResponseWriter, req *http.Request) {
+	logger.Log.Debug("ping pong request - DB")
+	if err := c.db.Ping(); err != nil {
+		logger.Log.Errorf("db ping error: ", err)
+		httperror.InternalServer(w, "failed ping connection to db")
+		return
+	}
+	w.Write([]byte("pong - DB"))
 }
 
 // static serves static files
@@ -56,12 +78,6 @@ func (c Controller) static() http.Handler {
 // home serves the Home page
 func (c Controller) home(w http.ResponseWriter, req *http.Request) {
 	c.tpl.Render(w, "home.gohtml", nil)
-}
-
-// ping is used for health check
-func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
-	logger.Log.Debug("ping pong request")
-	w.Write([]byte("pong"))
 }
 
 // serveBucketFileByID serves files from GC bucket
