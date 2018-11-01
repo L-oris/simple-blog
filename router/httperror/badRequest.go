@@ -2,11 +2,12 @@ package httperror
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+
+	"github.com/L-oris/yabb/logger"
 )
 
-// BadRequest writes a default 400 Bad Request to the client
+// BadRequest writes a 400 Bad Request to the client
 func BadRequest(w http.ResponseWriter, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json")
 	em := ErrorMessage{
@@ -18,6 +19,7 @@ func BadRequest(w http.ResponseWriter, errorMessage string) {
 	w.WriteHeader(http.StatusBadRequest)
 	err := json.NewEncoder(w).Encode(em)
 	if err != nil {
-		log.Fatalln("httperror.BadRequest > encoding error:", err)
+		logger.Log.Error("encoding error:", err)
+		w.Write([]byte("Bad Request"))
 	}
 }

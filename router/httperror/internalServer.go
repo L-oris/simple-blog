@@ -2,16 +2,14 @@ package httperror
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+
+	"github.com/L-oris/yabb/logger"
 )
 
-// InternalServer writes a default 500 Internal Server to the client
+// InternalServer writes a 500 Internal Server to the client
 func InternalServer(w http.ResponseWriter, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json")
-	if errorMessage == "" {
-		errorMessage = "Internal Server Error"
-	}
 	em := ErrorMessage{
 		Status:      http.StatusBadRequest,
 		Message:     "Internal Server Error",
@@ -21,6 +19,7 @@ func InternalServer(w http.ResponseWriter, errorMessage string) {
 	w.WriteHeader(http.StatusBadRequest)
 	err := json.NewEncoder(w).Encode(em)
 	if err != nil {
-		log.Fatalln("httperror.InternalServer > encoding error:", err)
+		logger.Log.Error("encoding error:", err)
+		w.Write([]byte("Internal Server Error"))
 	}
 }
