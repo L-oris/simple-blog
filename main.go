@@ -23,3 +23,6 @@ func main() {
 	logger.Log.Infof("server listening on port %s", env.Vars.Port)
 	logger.Log.Fatal(server.ListenAndServe())
 }
+
+// TODO: 'post.HasTitleAndContent' to 'post.CheckMandatoryFields'
+// TODO: parsePostForm, first line

@@ -13,7 +13,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-const maxUploadSize = 1 * 1024 * 1024 // MB
+const maxUploadedImageSize = 1 * 1024 * 1024 // MB
 
 // postForm contains data being parsed in template form submission
 type postForm struct {
@@ -22,8 +22,8 @@ type postForm struct {
 }
 
 func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields bool) (postForm, error) {
-	req.Body = http.MaxBytesReader(w, req.Body, maxUploadSize)
-	if err := req.ParseMultipartForm(maxUploadSize); err != nil {
+	req.Body = http.MaxBytesReader(w, req.Body, maxUploadedImageSize)
+	if err := req.ParseMultipartForm(maxUploadedImageSize); err != nil {
 		err = fmt.Errorf("uploaded file is too big: %s", err.Error())
 		logger.Log.Debug(err.Error())
 		return postForm{}, err
@@ -40,7 +40,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 	}
 	if len(fileBytes) == 0 {
 		if checkRequiredFields {
-			return postForm{}, fmt.Errorf("missing mandatory picture for post")
+			return postForm{}, errors.New("missing mandatory picture for post")
 		}
 
 		return postForm{
@@ -71,7 +71,7 @@ func getImageFromForm(req *http.Request, inputField string) (contentType string,
 	var multipartFile multipart.File
 	multipartFile, _, err = req.FormFile(inputField)
 	if err != nil {
-		logger.Log.Debug("could not get file from template <form>: %s", err.Error())
+		logger.Log.Debug("no image submitted, proceeding with empty file")
 		return "", []byte{}, nil
 	}
 	defer multipartFile.Close()
