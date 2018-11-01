@@ -42,7 +42,6 @@ func New(config *Config) Controller {
 	router.PathPrefix("/static/").Handler(c.static())
 	router.HandleFunc("/", c.home).Methods("GET")
 	router.HandleFunc("/ping", c.ping).Methods("GET")
-	router.HandleFunc("/favicon.ico", c.favicon).Methods("GET")
 	router.HandleFunc("/upload", c.uploadGet).Methods("GET")
 	router.HandleFunc("/upload", c.uploadPost).Methods("POST")
 	router.HandleFunc("/bucket/{id}", c.serveBucket).Methods("GET")
@@ -69,10 +68,6 @@ func (c Controller) home(w http.ResponseWriter, req *http.Request) {
 func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	logger.Log.Debug("ping pong request")
 	w.Write([]byte("pong"))
-}
-
-func (c Controller) favicon(w http.ResponseWriter, req *http.Request) {
-	c.serve(w, req, "public/favicon.ico")
 }
 
 func (c Controller) uploadGet(w http.ResponseWriter, req *http.Request) {
