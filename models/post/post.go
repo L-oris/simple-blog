@@ -30,12 +30,12 @@ func FromJSON(jsonPost []byte) (Post, error) {
 	var newPost Post
 	err := json.Unmarshal(jsonPost, &newPost)
 	if err != nil {
-		errMessage := "models.PostFromJSON > unmarshal error: " + err.Error()
+		errMessage := "unmarshal error: " + err.Error()
 		return Post{}, errors.New(errMessage)
 	}
 
-	if !newPost.HasTitleAndContent() {
-		errMessage := "models.PostFromJSON > Post provided is missing 'Title' or 'Content'"
+	if !newPost.HasMandatoryFieldsFromForm() {
+		errMessage := "post provided is missing 'Title' or 'Content'"
 		return Post{}, errors.New(errMessage)
 	}
 
@@ -44,7 +44,7 @@ func FromJSON(jsonPost []byte) (Post, error) {
 
 // GenerateFromPartial generates a new Post from a set of partial fields
 func GenerateFromPartial(partialPost Post) (Post, error) {
-	if !partialPost.HasTitleAndContent() {
+	if !partialPost.HasMandatoryFieldsFromForm() {
 		return Post{}, errors.New("post.GenerateFromPartial > invalid Post provided")
 	}
 
@@ -60,8 +60,8 @@ func GenerateFromPartial(partialPost Post) (Post, error) {
 	return partialPost, nil
 }
 
-// HasTitleAndContent checks for 'Title' and 'Content' fields not to be empty
-func (p Post) HasTitleAndContent() bool {
+// HasMandatoryFieldsFromForm checks for 'Title' and 'Content' fields not to be empty
+func (p Post) HasMandatoryFieldsFromForm() bool {
 	if p.Title == "" || p.Content == "" {
 		return false
 	}

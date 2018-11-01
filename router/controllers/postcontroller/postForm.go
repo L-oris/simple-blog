@@ -28,7 +28,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 	}
 
 	post := getTextFieldsFromForm(req)
-	if checkRequiredFields && !post.HasTitleAndContent() {
+	if checkRequiredFields && !post.HasMandatoryFieldsFromForm() {
 		return postForm{}, errors.New("missing mandatory fields for post")
 	}
 
