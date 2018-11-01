@@ -2,7 +2,6 @@ package rootcontroller
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 
 	"github.com/L-oris/yabb/logger"
@@ -65,13 +64,15 @@ func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("pong"))
 }
 
+// serveBucketFileByID serves files from GC bucket
 func (c Controller) serveBucketFileByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	imageID := vars["id"]
 
 	file, err := c.bucket.Read(imageID)
 	if err != nil {
-		httperror.NotFound(w, fmt.Sprintf("file %s not found", imageID))
+		httperror.NotFound(w, err.Error())
+		return
 	}
 
 	w.Header().Set("Content-Type", http.DetectContentType(file))

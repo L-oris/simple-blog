@@ -53,7 +53,7 @@ func (c Repository) Write(fileName string, fileBytes []byte) error {
 
 // Read reads a file from bucket
 func (c Repository) Read(fileName string) ([]byte, error) {
-	defaultError := fmt.Errorf("cannot read %s from bucket", fileName)
+	defaultError := fmt.Errorf("cannot find %s in bucket", fileName)
 
 	bucketReader, err := c.bucket.NewReader(ctx, fileName)
 	if err != nil {
