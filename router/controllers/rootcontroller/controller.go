@@ -39,7 +39,7 @@ func New(config *Config) Controller {
 	router.PathPrefix("/static/").Handler(c.static())
 	router.HandleFunc("/", c.home).Methods("GET")
 	router.HandleFunc("/ping", c.ping).Methods("GET")
-	router.HandleFunc("/bucket/{id}", c.serveBucketFileById).Methods("GET")
+	router.HandleFunc("/bucket/{id}", c.serveBucketFileByID).Methods("GET")
 
 	c.Router = router
 	return c
@@ -65,7 +65,7 @@ func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("pong"))
 }
 
-func (c Controller) serveBucketFileById(w http.ResponseWriter, req *http.Request) {
+func (c Controller) serveBucketFileByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	imageID := vars["id"]
 

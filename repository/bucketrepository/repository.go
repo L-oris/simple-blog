@@ -30,20 +30,22 @@ func New(config Config) (*Repository, error) {
 
 // Write writes a file to bucket
 func (c Repository) Write(fileName string, fileBytes []byte) error {
+	defaultError := fmt.Errorf("cannot write %s to bucket", fileName)
+
 	bucketWriter, err := c.bucket.NewWriter(ctx, fileName, nil)
 	if err != nil {
 		logger.Log.Errorf("create bucketWriter error: %s", err.Error())
-		return err
+		return defaultError
 	}
 
 	if _, err := bucketWriter.Write(fileBytes); err != nil {
 		logger.Log.Errorf("write to bucket error: %s", err.Error())
-		return err
+		return defaultError
 	}
 
 	if err := bucketWriter.Close(); err != nil {
 		logger.Log.Errorf("close bucket error: %s", err.Error())
-		return err
+		return defaultError
 	}
 
 	return nil
@@ -51,17 +53,19 @@ func (c Repository) Write(fileName string, fileBytes []byte) error {
 
 // Read reads a file from bucket
 func (c Repository) Read(fileName string) ([]byte, error) {
+	defaultError := fmt.Errorf("cannot read %s from bucket", fileName)
+
 	bucketReader, err := c.bucket.NewReader(ctx, fileName)
 	if err != nil {
 		logger.Log.Errorf("cannot find file %s: %s", fileName, err.Error())
-		return nil, err
+		return nil, defaultError
 	}
 	defer bucketReader.Close()
 
 	newFile, err := ioutil.ReadAll(bucketReader)
 	if err != nil {
 		logger.Log.Fatalf("cannot create new file: %s", err.Error())
-		return nil, err
+		return nil, defaultError
 	}
 
 	return newFile, nil
@@ -71,7 +75,7 @@ func (c Repository) Read(fileName string) ([]byte, error) {
 func (c Repository) Delete(fileName string) error {
 	if err := c.bucket.Delete(ctx, fileName); err != nil {
 		logger.Log.Errorf("delete file %s error: %s", fileName, err.Error())
-		return fmt.Errorf("cannot delete file %s", fileName)
+		return fmt.Errorf("cannot delete %s from bucket", fileName)
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package bucketrepository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/google/go-cloud/blob"
@@ -13,13 +14,15 @@ import (
 func setupGCP(ctx context.Context, bucket string) (*blob.Bucket, error) {
 	credentials, err := gcp.DefaultCredentials(ctx)
 	if err != nil {
-		logger.Log.Error("cannot get default credentials: %s", err.Error())
+		err = fmt.Errorf("cannot get default credentials: %s", err.Error())
+		logger.Log.Error(err.Error())
 		return nil, err
 	}
 
 	client, err := gcp.NewHTTPClient(gcp.DefaultTransport(), gcp.CredentialsTokenSource(credentials))
 	if err != nil {
-		logger.Log.Error("cannot create HTTPClient: %s", err.Error())
+		err = fmt.Errorf("cannot create HTTPClient: %s", err.Error())
+		logger.Log.Error(err.Error())
 		return nil, err
 	}
 
