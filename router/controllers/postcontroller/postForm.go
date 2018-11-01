@@ -24,12 +24,10 @@ type postForm struct {
 func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields bool) (postForm, error) {
 	req.Body = http.MaxBytesReader(w, req.Body, maxUploadedImageSize)
 	if err := req.ParseMultipartForm(maxUploadedImageSize); err != nil {
-		err = fmt.Errorf("uploaded file is too big: %s", err.Error())
-		logger.Log.Debug(err.Error())
-		return postForm{}, err
+		return postForm{}, errors.New("uploaded file is too big")
 	}
 
-	post := getFieldsFromForm(req)
+	post := getTextFieldsFromForm(req)
 	if checkRequiredFields && !post.HasTitleAndContent() {
 		return postForm{}, errors.New("missing mandatory fields for post")
 	}
@@ -60,7 +58,7 @@ func parsePostForm(w http.ResponseWriter, req *http.Request, checkRequiredFields
 	}, nil
 }
 
-func getFieldsFromForm(req *http.Request) post.Post {
+func getTextFieldsFromForm(req *http.Request) post.Post {
 	return post.Post{
 		Title:   req.Form["title"][0],
 		Content: req.Form["content"][0],
@@ -78,16 +76,13 @@ func getImageFromForm(req *http.Request, inputField string) (contentType string,
 
 	fileBytes, err = ioutil.ReadAll(multipartFile)
 	if err != nil {
-		err = fmt.Errorf("invalid file uploaded: %s", err.Error())
-		logger.Log.Debug(err.Error())
-		return "", nil, err
+		logger.Log.Debugf("invalid file uploaded: %s", err.Error())
+		return "", nil, errors.New("invalid file uploaded")
 	}
 
 	contentType = http.DetectContentType(fileBytes)
 	if ok := checkImageType(contentType); !ok {
-		err = fmt.Errorf("invalid fileType provided: %s", contentType)
-		logger.Log.Debug(err.Error())
-		return "", nil, err
+		return "", nil, fmt.Errorf("invalid fileType provided: %s", contentType)
 	}
 
 	return contentType, fileBytes, nil

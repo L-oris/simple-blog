@@ -25,5 +25,7 @@ func main() {
 }
 
 // TODO: 'post.HasTitleAndContent' to 'post.CheckMandatoryFields'
-// TODO: parsePostForm, first line
+// * ? should we maintain a defined slice of fields
 // TODO: move 'tpl' and 'env' packages out of 'models' directory
+// TODO: 'httperror' package should render error template with error message we receive
+// TODO: move away post actions from postRepository (create separate engine)

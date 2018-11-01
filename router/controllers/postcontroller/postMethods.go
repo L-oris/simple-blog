@@ -15,12 +15,12 @@ func (c Controller) new(w http.ResponseWriter, req *http.Request) {
 
 	newPost, err := c.repository.Add(postForm.post)
 	if err != nil {
-		httperror.InternalServer(w, "failed to save post")
+		httperror.InternalServer(w, err.Error())
 		return
 	}
 
 	if err = c.bucket.Write(postForm.post.Picture, postForm.fileBytes); err != nil {
-		httperror.InternalServer(w, "failed to save file")
+		httperror.InternalServer(w, err.Error())
 		return
 	}
 
@@ -31,7 +31,7 @@ func (c Controller) new(w http.ResponseWriter, req *http.Request) {
 func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
-		httperror.BadRequest(w, "bad id provided: "+string(pID))
+		httperror.BadRequest(w, err.Error())
 	}
 
 	oldPost, err := c.repository.GetByID(pID)
@@ -54,7 +54,7 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 
 	if len(postForm.fileBytes) > 0 {
 		if err = c.bucket.Write(postForm.post.Picture, postForm.fileBytes); err != nil {
-			httperror.InternalServer(w, "failed to save file")
+			httperror.InternalServer(w, err.Error())
 			return
 		}
 
@@ -71,7 +71,7 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 	pID, err := getPostIDFromURL(req)
 	if err != nil {
-		httperror.BadRequest(w, "bad id provided: "+string(pID))
+		httperror.BadRequest(w, err.Error())
 	}
 
 	post, err := c.repository.GetByID(pID)
