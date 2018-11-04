@@ -2,34 +2,26 @@ package postcontroller
 
 import (
 	"github.com/L-oris/yabb/foreign/template"
-	"github.com/L-oris/yabb/repository/bucketrepository"
-	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/L-oris/yabb/services/postservice"
 	"github.com/gorilla/mux"
 )
 
 type Config struct {
-	Repository *postrepository.Repository
-	Renderer   template.Renderer
-	Bucket     *bucketrepository.Repository
-	Service    *postservice.Service
+	Renderer template.Renderer
+	Service  *postservice.Service
 }
 
 type Controller struct {
-	Router     *mux.Router
-	bucket     *bucketrepository.Repository
-	repository *postrepository.Repository
-	renderer   template.Renderer
-	service    *postservice.Service
+	Router   *mux.Router
+	renderer template.Renderer
+	service  *postservice.Service
 }
 
 // New creates a new controller and registers the routes
 func New(config *Config) Controller {
 	c := Controller{
-		repository: config.Repository,
-		renderer:   config.Renderer,
-		bucket:     config.Bucket,
-		service:    config.Service,
+		renderer: config.Renderer,
+		service:  config.Service,
 	}
 
 	router := mux.NewRouter()
