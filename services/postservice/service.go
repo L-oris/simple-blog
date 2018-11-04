@@ -67,3 +67,23 @@ func (s Service) UpdateByID(postID int, newPartialPost post.Post, fileBytes []by
 
 	return dbPost, nil
 }
+
+// DeleteByID deletes a post by ID
+func (s Service) DeleteByID(postID int) error {
+	dbPost, err := s.repository.GetByID(postID)
+	if err != nil {
+		err = fmt.Errorf("cannot delete post with id %d: does not exist", postID)
+		logger.Log.Debug(err.Error())
+		return err
+	}
+
+	if err = s.bucket.Delete(dbPost.Picture); err != nil {
+		return err
+	}
+
+	if err = s.repository.DeleteByID(postID); err != nil {
+		return err
+	}
+
+	return nil
+}

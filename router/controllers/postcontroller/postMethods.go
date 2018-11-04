@@ -53,18 +53,7 @@ func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	post, err := c.repository.GetByID(pID)
-	if err != nil {
-		httperror.BadRequest(w, err.Error())
-		return
-	}
-
-	if err = c.bucket.Delete(post.Picture); err != nil {
-		httperror.InternalServer(w, err.Error())
-		return
-	}
-
-	if err = c.repository.DeleteByID(pID); err != nil {
+	if err = c.service.DeleteByID(pID); err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
 	}
