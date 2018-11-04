@@ -30,37 +30,19 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	oldPost, err := c.repository.GetByID(pID)
-	if err != nil {
-		httperror.BadRequest(w, err.Error())
-		return
-	}
-
 	postForm, err := parsePostForm(w, req, false)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
 	}
 
-	post, err := c.repository.UpdateByID(pID, postForm.post)
+	updatedPost, err := c.service.UpdateByID(pID, postForm.post, postForm.fileBytes)
 	if err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
 	}
 
-	if len(postForm.fileBytes) > 0 {
-		if err = c.bucket.Write(postForm.post.Picture, postForm.fileBytes); err != nil {
-			httperror.InternalServer(w, err.Error())
-			return
-		}
-
-		if err = c.bucket.Delete(oldPost.Picture); err != nil {
-			httperror.InternalServer(w, err.Error())
-			return
-		}
-	}
-
-	w.Header().Set("Location", "/post/"+post.ID)
+	w.Header().Set("Location", "/post/"+updatedPost.ID)
 	w.WriteHeader(http.StatusSeeOther)
 }
 

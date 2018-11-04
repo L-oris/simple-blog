@@ -1,6 +1,9 @@
 package postservice
 
 import (
+	"fmt"
+
+	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
 	"github.com/L-oris/yabb/repository/bucketrepository"
 	"github.com/L-oris/yabb/repository/postrepository"
@@ -33,6 +36,33 @@ func (s Service) Create(newPost post.Post, fileBytes []byte) (post.Post, error) 
 
 	if err = s.bucket.Write(dbPost.Picture, fileBytes); err != nil {
 		return post.Post{}, err
+	}
+
+	return dbPost, nil
+}
+
+// UpdateByID updates a post by ID
+func (s Service) UpdateByID(postID int, newPartialPost post.Post, fileBytes []byte) (post.Post, error) {
+	oldPost, err := s.repository.GetByID(postID)
+	if err != nil {
+		err = fmt.Errorf("cannot update post with id %d: does not exist", postID)
+		logger.Log.Debug(err.Error())
+		return post.Post{}, err
+	}
+
+	dbPost, err := s.repository.UpdateByID(postID, newPartialPost)
+	if err != nil {
+		return post.Post{}, err
+	}
+
+	if len(fileBytes) > 0 {
+		if err = s.bucket.Write(dbPost.Picture, fileBytes); err != nil {
+			return post.Post{}, err
+		}
+
+		if err = s.bucket.Delete(oldPost.Picture); err != nil {
+			return post.Post{}, err
+		}
 	}
 
 	return dbPost, nil
