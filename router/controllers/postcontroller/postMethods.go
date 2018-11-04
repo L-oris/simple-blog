@@ -13,13 +13,8 @@ func (c Controller) new(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	newPost, err := c.repository.Add(postForm.post)
+	newPost, err := c.service.Create(postForm.post, postForm.fileBytes)
 	if err != nil {
-		httperror.InternalServer(w, err.Error())
-		return
-	}
-
-	if err = c.bucket.Write(postForm.post.Picture, postForm.fileBytes); err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
 	}
