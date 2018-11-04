@@ -7,7 +7,7 @@ import (
 )
 
 func (c Controller) renderAll(w http.ResponseWriter, req *http.Request) {
-	posts, err := c.repository.GetAll()
+	posts, err := c.service.GetAll()
 	if err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
@@ -20,13 +20,13 @@ func (c Controller) renderNew(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
-	pID, err := getPostIDFromURL(req)
+	postID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
 	}
 
-	post, err := c.repository.GetByID(pID)
+	post, err := c.service.GetByID(postID)
 	if err != nil {
 		httperror.NotFound(w, err.Error())
 		return
@@ -36,13 +36,13 @@ func (c Controller) renderByID(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c Controller) renderUpdateByID(w http.ResponseWriter, req *http.Request) {
-	pID, err := getPostIDFromURL(req)
+	postID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
 	}
 
-	post, err := c.repository.GetByID(pID)
+	post, err := c.service.GetByID(postID)
 	if err != nil {
 		httperror.NotFound(w, err.Error())
 		return

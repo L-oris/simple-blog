@@ -24,7 +24,7 @@ func (c Controller) new(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
-	pID, err := getPostIDFromURL(req)
+	postID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
@@ -36,7 +36,7 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedPost, err := c.service.UpdateByID(pID, postForm.post, postForm.fileBytes)
+	updatedPost, err := c.service.UpdateByID(postID, postForm.post, postForm.fileBytes)
 	if err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
@@ -47,13 +47,13 @@ func (c Controller) updateByID(w http.ResponseWriter, req *http.Request) {
 }
 
 func (c Controller) deleteByID(w http.ResponseWriter, req *http.Request) {
-	pID, err := getPostIDFromURL(req)
+	postID, err := getPostIDFromURL(req)
 	if err != nil {
 		httperror.BadRequest(w, err.Error())
 		return
 	}
 
-	if err = c.service.DeleteByID(pID); err != nil {
+	if err = c.service.DeleteByID(postID); err != nil {
 		httperror.InternalServer(w, err.Error())
 		return
 	}

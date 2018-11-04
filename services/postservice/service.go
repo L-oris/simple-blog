@@ -27,6 +27,24 @@ func New(config *Config) *Service {
 	}
 }
 
+// GetAll gets all posts
+func (s Service) GetAll() ([]post.Post, error) {
+	dbPosts, err := s.repository.GetAll()
+	if err != nil {
+		return []post.Post{}, err
+	}
+	return dbPosts, nil
+}
+
+// GetByID gets a post by ID
+func (s Service) GetByID(postID int) (post.Post, error) {
+	dbPost, err := s.repository.GetByID(postID)
+	if err != nil {
+		return post.Post{}, err
+	}
+	return dbPost, nil
+}
+
 // Create creates a new post
 func (s Service) Create(newPost post.Post, fileBytes []byte) (post.Post, error) {
 	dbPost, err := s.repository.Add(newPost)
