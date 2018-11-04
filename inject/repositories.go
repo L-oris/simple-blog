@@ -12,7 +12,7 @@ import (
 )
 
 func repositories() []di.Def {
-	postRepository := di.Def{
+	postRepositoryValue := di.Def{
 		Name: types.PostRepository.String(),
 		Build: func(ctn di.Container) (interface{}, error) {
 			return postrepository.New(
@@ -23,7 +23,7 @@ func repositories() []di.Def {
 		},
 	}
 
-	bucketRepository := di.Def{
+	bucketRepositoryValue := di.Def{
 		Name: types.BucketRepository.String(),
 		Build: func(ctn di.Container) (interface{}, error) {
 			repo, err := bucketrepository.New(
@@ -40,6 +40,6 @@ func repositories() []di.Def {
 	}
 
 	return []di.Def{
-		postRepository, bucketRepository,
+		postRepositoryValue, bucketRepositoryValue,
 	}
 }

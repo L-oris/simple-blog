@@ -10,6 +10,7 @@ import (
 	"github.com/L-oris/yabb/repository/postrepository"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"
 	"github.com/L-oris/yabb/router/controllers/rootcontroller"
+	"github.com/L-oris/yabb/services/postservice"
 	"github.com/sarulabs/di"
 )
 
@@ -34,6 +35,7 @@ func controllers() []di.Def {
 				Repository: ctn.Get(types.PostRepository.String()).(*postrepository.Repository),
 				Renderer:   ctn.Get(types.Template.String()).(*template.Template),
 				Bucket:     ctn.Get(types.BucketRepository.String()).(*bucketrepository.Repository),
+				Service:    ctn.Get(types.PostService.String()).(*postservice.Service),
 			}), nil
 		},
 	}

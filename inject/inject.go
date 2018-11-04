@@ -11,6 +11,7 @@ func CreateContainer() di.Container {
 	builder.Add(core()...)
 	builder.Add(repositories()...)
 	builder.Add(controllers()...)
+	builder.Add(services()...)
 	builder.Add(routers()...)
 
 	return builder.Build()
