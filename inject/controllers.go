@@ -6,7 +6,7 @@ import (
 
 	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/repository/bucketrepository"
+	"github.com/L-oris/yabb/repositories/bucketrepository"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"
 	"github.com/L-oris/yabb/router/controllers/rootcontroller"
 	"github.com/L-oris/yabb/services/postservice"

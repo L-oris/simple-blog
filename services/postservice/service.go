@@ -5,8 +5,8 @@ import (
 
 	"github.com/L-oris/yabb/logger"
 	"github.com/L-oris/yabb/models/post"
-	"github.com/L-oris/yabb/repository/bucketrepository"
-	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/L-oris/yabb/repositories/bucketrepository"
+	"github.com/L-oris/yabb/repositories/postrepository"
 )
 
 type Config struct {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/repository/bucketrepository"
+	"github.com/L-oris/yabb/repositories/bucketrepository"
 	"github.com/L-oris/yabb/router/httperror"
 	"github.com/gorilla/mux"
 )

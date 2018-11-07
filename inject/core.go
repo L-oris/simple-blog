@@ -5,7 +5,7 @@ import (
 
 	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/repository/db"
+	"github.com/L-oris/yabb/repositories/db"
 	"github.com/sarulabs/di"
 )
 

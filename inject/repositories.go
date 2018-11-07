@@ -6,8 +6,8 @@ import (
 
 	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/inject/types"
-	"github.com/L-oris/yabb/repository/bucketrepository"
-	"github.com/L-oris/yabb/repository/postrepository"
+	"github.com/L-oris/yabb/repositories/bucketrepository"
+	"github.com/L-oris/yabb/repositories/postrepository"
 	"github.com/sarulabs/di"
 )
 
