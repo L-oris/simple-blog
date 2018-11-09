@@ -25,6 +25,13 @@ func New(config *Config) *Repository {
 	}
 }
 
+// NewWire creates a new Repository
+func NewWire(db *sql.DB) *Repository {
+	return &Repository{
+		DB: db,
+	}
+}
+
 // Ping checks DB connection
 func (r Repository) Ping() error {
 	if err := r.DB.Ping(); err != nil {

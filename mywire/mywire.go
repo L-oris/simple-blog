@@ -1,3 +1,5 @@
+//+build wireinject
+
 package mywire
 
 import (
@@ -10,32 +12,26 @@ import (
 	"github.com/L-oris/yabb/repositories/bucketrepository"
 	"github.com/L-oris/yabb/repositories/db"
 	"github.com/L-oris/yabb/repositories/postrepository"
+	"github.com/L-oris/yabb/router"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"
 	"github.com/L-oris/yabb/router/controllers/rootcontroller"
 	"github.com/L-oris/yabb/services/postservice"
+	"github.com/google/go-cloud/wire"
 )
 
-func FileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
+func ProvideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
 	return http.ServeFile, nil
 }
 
-func BlogDB() (*sql.DB, error) {
-	return db.BlogDB, nil
+func ProvideBlogDB() *sql.DB {
+	return db.BlogDB
 }
 
-func Templates() (*template.Template, error) {
+func ProvideTemplates() (*template.Template, error) {
 	return &template.Template{}, nil
 }
 
-func PostRepository(db *sql.DB) (*postrepository.Repository, error) {
-	return postrepository.New(
-		&postrepository.Config{
-			DB: db,
-		},
-	), nil
-}
-
-func BucketRepository() (*bucketrepository.Repository, error) {
+func ProvideBucket() (*bucketrepository.Repository, error) {
 	repo, err := bucketrepository.New(
 		bucketrepository.Config{
 			BucketName: env.Vars.BucketName,
@@ -47,26 +43,27 @@ func BucketRepository() (*bucketrepository.Repository, error) {
 	return repo, nil
 }
 
-func PostService(bucket *bucketrepository.Repository, repository *postrepository.Repository) (*postservice.Service, error) {
-	return postservice.New(&postservice.Config{
-		Bucket:     bucket,
-		Repository: repository,
-	}), nil
+func ProvideRootController() (rootcontroller.Controller, error) {
+	wire.Build(rootcontroller.NewWire, ProvideFileServer, ProvideBlogDB, ProvideTemplates, ProvideBucket)
+	return rootcontroller.Controller{}, nil
 }
 
-func RootController(renderer *template.Template, serve func(w http.ResponseWriter, r *http.Request, fileName string), bucket *bucketrepository.Repository, db *sql.DB) (rootcontroller.Controller, error) {
-	return rootcontroller.New(
-		&rootcontroller.Config{
-			Renderer: renderer,
-			Serve:    serve,
-			Bucket:   bucket,
-			DB:       db,
-		}), nil
+func ProvidePostRepository() (*postrepository.Repository, error) {
+	wire.Build(postrepository.NewWire, ProvideBlogDB)
+	return &postrepository.Repository{}, nil
 }
 
-func PostController(renderer *template.Template, service *postservice.Service) (postcontroller.Controller, error) {
-	return postcontroller.New(&postcontroller.Config{
-		Renderer: renderer,
-		Service:  service,
-	}), nil
+func ProvidePostService() (*postservice.Service, error) {
+	wire.Build(postservice.NewWire, ProvideBucket, ProvidePostRepository)
+	return &postservice.Service{}, nil
+}
+
+func ProvidePostController() (postcontroller.Controller, error) {
+	wire.Build(postcontroller.NewWire, ProvideTemplates, ProvidePostService)
+	return postcontroller.Controller{}, nil
+}
+
+func ProvideRouter() (http.Handler, error) {
+	wire.Build(router.NewWire, ProvideRootController, ProvidePostController)
+	return nil, nil
 }

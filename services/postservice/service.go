@@ -27,6 +27,13 @@ func New(config *Config) *Service {
 	}
 }
 
+func NewWire(bucket *bucketrepository.Repository, repository *postrepository.Repository) *Service {
+	return &Service{
+		bucket:     bucket,
+		repository: repository,
+	}
+}
+
 // GetAll gets all posts
 func (s Service) GetAll() ([]post.Post, error) {
 	dbPosts, err := s.repository.GetAll()

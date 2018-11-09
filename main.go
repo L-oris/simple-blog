@@ -4,15 +4,22 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/L-oris/yabb/mywire"
+
 	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/inject"
-	"github.com/L-oris/yabb/inject/types"
 	"github.com/L-oris/yabb/logger"
 )
 
 func main() {
 	container := inject.CreateContainer()
-	router := container.Get(types.Router.String()).(http.Handler)
+	// router := container.Get(types.Router.String()).(http.Handler)
+	router, err := mywire.ProvideRouter()
+	// event, err := inject.InitializeEvent("custom message")
+	// if err != nil {
+	// 	fmt.Printf("failed to create event: %s\n", err)
+	// 	os.Exit(2)
+	// }
 	server := &http.Server{
 		Addr:         ":" + env.Vars.Port,
 		Handler:      router,

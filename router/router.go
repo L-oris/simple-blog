@@ -27,6 +27,19 @@ func Mount(ctn di.Container) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, router)
 }
 
+// NewWire creates and returns a new mux.Router, with all handled attached to it
+func NewWire(postController postcontroller.Controller, rootController rootcontroller.Controller) http.Handler {
+	router := mux.NewRouter()
+
+	attachHandler(router, "/post", postController.Router)
+	attachHandler(router, "/", rootController.Router)
+	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		httperror.NotFound(w, "Route Not Found")
+	})
+
+	return handlers.LoggingHandler(os.Stdout, router)
+}
+
 func attachHandler(r *mux.Router, path string, handler http.Handler) {
 	r.PathPrefix(path).Handler(
 		http.StripPrefix(

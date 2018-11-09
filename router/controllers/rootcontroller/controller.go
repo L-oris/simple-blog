@@ -49,6 +49,25 @@ func New(config *Config) Controller {
 	return c
 }
 
+func NewWire(renderer template.Renderer, serve Serve, bucket *bucketrepository.Repository, db *sql.DB) Controller {
+	c := Controller{
+		serve:    serve,
+		renderer: renderer,
+		bucket:   bucket,
+		db:       db,
+	}
+
+	router := mux.NewRouter()
+	router.HandleFunc("/", c.home).Methods("GET")
+	router.HandleFunc("/ping", c.ping).Methods("GET")
+	router.HandleFunc("/pingDB", c.pingDB).Methods("GET")
+	router.PathPrefix("/static/").Handler(c.static())
+	router.HandleFunc("/bucket/{id}", c.serveBucketFileByID).Methods("GET")
+
+	c.Router = router
+	return c
+}
+
 // ping is used for health check on the server
 func (c Controller) ping(w http.ResponseWriter, req *http.Request) {
 	logger.Log.Debug("ping pong request - server")
