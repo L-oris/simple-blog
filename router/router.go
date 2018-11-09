@@ -27,12 +27,17 @@ func Mount(ctn di.Container) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, router)
 }
 
+type Config struct {
+	PostController postcontroller.Controller
+	RootController rootcontroller.Controller
+}
+
 // NewWire creates and returns a new mux.Router, with all handled attached to it
-func NewWire(postController postcontroller.Controller, rootController rootcontroller.Controller) http.Handler {
+func NewWire(config Config) http.Handler {
 	router := mux.NewRouter()
 
-	attachHandler(router, "/post", postController.Router)
-	attachHandler(router, "/", rootController.Router)
+	attachHandler(router, "/post", config.PostController.Router)
+	attachHandler(router, "/", config.RootController.Router)
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		httperror.NotFound(w, "Route Not Found")
 	})

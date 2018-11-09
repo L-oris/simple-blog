@@ -40,7 +40,7 @@ func provideBucket() (*bucketrepository.Repository, error) {
 }
 
 func provideRootController() (rootcontroller.Controller, error) {
-	wire.Build(rootcontroller.NewWire, provideFileServer, provideDB, provideRenderer, provideBucket)
+	wire.Build(rootcontroller.NewWire, rootcontroller.Config{}, provideFileServer, provideDB, provideRenderer, provideBucket)
 	return rootcontroller.Controller{}, nil
 }
 
@@ -55,11 +55,11 @@ func providePostService() (*postservice.Service, error) {
 }
 
 func providePostController() (postcontroller.Controller, error) {
-	wire.Build(postcontroller.NewWire, provideRenderer, providePostService)
+	wire.Build(postcontroller.NewWire, postcontroller.Config{}, provideRenderer, providePostService)
 	return postcontroller.Controller{}, nil
 }
 
 func InitializeRouter() (http.Handler, error) {
-	wire.Build(router.NewWire, provideRootController, providePostController)
+	wire.Build(router.NewWire, router.Config{}, provideRootController, providePostController)
 	return nil, nil
 }

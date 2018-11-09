@@ -49,12 +49,12 @@ func New(config *Config) Controller {
 	return c
 }
 
-func NewWire(renderer template.Renderer, serve func(w http.ResponseWriter, r *http.Request, fileName string), bucket *bucketrepository.Repository, db *sql.DB) Controller {
+func NewWire(config Config) Controller {
 	c := Controller{
-		serve:    serve,
-		renderer: renderer,
-		bucket:   bucket,
-		db:       db,
+		serve:    config.Serve,
+		renderer: config.Renderer,
+		bucket:   config.Bucket,
+		db:       config.DB,
 	}
 
 	router := mux.NewRouter()

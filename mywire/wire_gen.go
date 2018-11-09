@@ -36,7 +36,13 @@ func provideRootController() (rootcontroller.Controller, error) {
 		return rootcontroller.Controller{}, err
 	}
 	db := provideDB()
-	controller := rootcontroller.NewWire(renderer, v, repository, db)
+	config := rootcontroller.Config{
+		Renderer: renderer,
+		Serve:    v,
+		Bucket:   repository,
+		DB:       db,
+	}
+	controller := rootcontroller.NewWire(config)
 	return controller, nil
 }
 
@@ -68,7 +74,11 @@ func providePostController() (postcontroller.Controller, error) {
 	if err != nil {
 		return postcontroller.Controller{}, err
 	}
-	controller := postcontroller.NewWire(renderer, service)
+	config := postcontroller.Config{
+		Renderer: renderer,
+		Service:  service,
+	}
+	controller := postcontroller.NewWire(config)
 	return controller, nil
 }
 
@@ -81,7 +91,11 @@ func InitializeRouter() (http.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := router.NewWire(controller, rootcontrollerController)
+	config := router.Config{
+		PostController: controller,
+		RootController: rootcontrollerController,
+	}
+	handler := router.NewWire(config)
 	return handler, nil
 }
 

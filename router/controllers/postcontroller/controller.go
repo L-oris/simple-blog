@@ -38,10 +38,10 @@ func New(config *Config) Controller {
 }
 
 // NewWire creates a new controller and registers the routes
-func NewWire(renderer template.Renderer, service *postservice.Service) Controller {
+func NewWire(config Config) Controller {
 	c := Controller{
-		renderer: renderer,
-		service:  service,
+		renderer: config.Renderer,
+		service:  config.Service,
 	}
 
 	router := mux.NewRouter()
