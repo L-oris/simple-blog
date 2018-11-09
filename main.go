@@ -12,9 +12,9 @@ import (
 )
 
 func main() {
-	router, err := mywire.ProvideRouter()
+	router, err := mywire.InitializeRouter()
 	if err != nil {
-		fmt.Printf("failed to create event: %s\n", err)
+		fmt.Printf("failed to create router: %s\n", err)
 		os.Exit(1)
 	}
 	server := &http.Server{
@@ -27,3 +27,5 @@ func main() {
 	logger.Log.Infof("server listening on port %s", env.Vars.Port)
 	logger.Log.Fatal(server.ListenAndServe())
 }
+
+// todo: provide all env.Vars in config to `InitializeWire` -> each one its own type

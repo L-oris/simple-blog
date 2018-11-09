@@ -19,19 +19,19 @@ import (
 	"github.com/google/go-cloud/wire"
 )
 
-func ProvideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
+func provideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
 	return http.ServeFile, nil
 }
 
-func ProvideBlogDB() *sql.DB {
+func provideDB() *sql.DB {
 	return db.BlogDB
 }
 
-func ProvideTemplates() (template.Renderer, error) {
+func provideRenderer() (template.Renderer, error) {
 	return template.Template{}, nil
 }
 
-func ProvideBucket() (*bucketrepository.Repository, error) {
+func provideBucket() (*bucketrepository.Repository, error) {
 	repo, err := bucketrepository.NewWire(bucketrepository.BucketName(env.Vars.BucketName))
 	if err != nil {
 		return nil, fmt.Errorf("could not create bucket: %s", err.Error())
@@ -39,27 +39,27 @@ func ProvideBucket() (*bucketrepository.Repository, error) {
 	return repo, nil
 }
 
-func ProvideRootController() (rootcontroller.Controller, error) {
-	wire.Build(rootcontroller.NewWire, ProvideFileServer, ProvideBlogDB, ProvideTemplates, ProvideBucket)
+func provideRootController() (rootcontroller.Controller, error) {
+	wire.Build(rootcontroller.NewWire, provideFileServer, provideDB, provideRenderer, provideBucket)
 	return rootcontroller.Controller{}, nil
 }
 
-func ProvidePostRepository() (*postrepository.Repository, error) {
-	wire.Build(postrepository.NewWire, ProvideBlogDB)
+func providePostRepository() (*postrepository.Repository, error) {
+	wire.Build(postrepository.NewWire, provideDB)
 	return &postrepository.Repository{}, nil
 }
 
-func ProvidePostService() (*postservice.Service, error) {
-	wire.Build(postservice.NewWire, ProvideBucket, ProvidePostRepository)
+func providePostService() (*postservice.Service, error) {
+	wire.Build(postservice.NewWire, provideBucket, providePostRepository)
 	return &postservice.Service{}, nil
 }
 
-func ProvidePostController() (postcontroller.Controller, error) {
-	wire.Build(postcontroller.NewWire, ProvideTemplates, ProvidePostService)
+func providePostController() (postcontroller.Controller, error) {
+	wire.Build(postcontroller.NewWire, provideRenderer, providePostService)
 	return postcontroller.Controller{}, nil
 }
 
-func ProvideRouter() (http.Handler, error) {
-	wire.Build(router.NewWire, ProvideRootController, ProvidePostController)
+func InitializeRouter() (http.Handler, error) {
+	wire.Build(router.NewWire, provideRootController, providePostController)
 	return nil, nil
 }

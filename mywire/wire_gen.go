@@ -22,36 +22,36 @@ import (
 
 // Injectors from mywire.go:
 
-func ProvideRootController() (rootcontroller.Controller, error) {
-	renderer, err := ProvideTemplates()
+func provideRootController() (rootcontroller.Controller, error) {
+	renderer, err := provideRenderer()
 	if err != nil {
 		return rootcontroller.Controller{}, err
 	}
-	v, err := ProvideFileServer()
+	v, err := provideFileServer()
 	if err != nil {
 		return rootcontroller.Controller{}, err
 	}
-	repository, err := ProvideBucket()
+	repository, err := provideBucket()
 	if err != nil {
 		return rootcontroller.Controller{}, err
 	}
-	db := ProvideBlogDB()
+	db := provideDB()
 	controller := rootcontroller.NewWire(renderer, v, repository, db)
 	return controller, nil
 }
 
-func ProvidePostRepository() (*postrepository.Repository, error) {
-	db := ProvideBlogDB()
+func providePostRepository() (*postrepository.Repository, error) {
+	db := provideDB()
 	repository := postrepository.NewWire(db)
 	return repository, nil
 }
 
-func ProvidePostService() (*postservice.Service, error) {
-	repository, err := ProvideBucket()
+func providePostService() (*postservice.Service, error) {
+	repository, err := provideBucket()
 	if err != nil {
 		return nil, err
 	}
-	postrepositoryRepository, err := ProvidePostRepository()
+	postrepositoryRepository, err := providePostRepository()
 	if err != nil {
 		return nil, err
 	}
@@ -59,12 +59,12 @@ func ProvidePostService() (*postservice.Service, error) {
 	return service, nil
 }
 
-func ProvidePostController() (postcontroller.Controller, error) {
-	renderer, err := ProvideTemplates()
+func providePostController() (postcontroller.Controller, error) {
+	renderer, err := provideRenderer()
 	if err != nil {
 		return postcontroller.Controller{}, err
 	}
-	service, err := ProvidePostService()
+	service, err := providePostService()
 	if err != nil {
 		return postcontroller.Controller{}, err
 	}
@@ -72,12 +72,12 @@ func ProvidePostController() (postcontroller.Controller, error) {
 	return controller, nil
 }
 
-func ProvideRouter() (http.Handler, error) {
-	controller, err := ProvidePostController()
+func InitializeRouter() (http.Handler, error) {
+	controller, err := providePostController()
 	if err != nil {
 		return nil, err
 	}
-	rootcontrollerController, err := ProvideRootController()
+	rootcontrollerController, err := provideRootController()
 	if err != nil {
 		return nil, err
 	}
@@ -87,19 +87,19 @@ func ProvideRouter() (http.Handler, error) {
 
 // mywire.go:
 
-func ProvideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
+func provideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
 	return http.ServeFile, nil
 }
 
-func ProvideBlogDB() *sql.DB {
+func provideDB() *sql.DB {
 	return db.BlogDB
 }
 
-func ProvideTemplates() (template.Renderer, error) {
+func provideRenderer() (template.Renderer, error) {
 	return template.Template{}, nil
 }
 
-func ProvideBucket() (*bucketrepository.Repository, error) {
+func provideBucket() (*bucketrepository.Repository, error) {
 	repo, err := bucketrepository.NewWire(bucketrepository.BucketName(env.Vars.BucketName))
 	if err != nil {
 		return nil, fmt.Errorf("could not create bucket: %s", err.Error())
