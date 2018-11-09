@@ -100,10 +100,7 @@ func ProvideTemplates() (template.Renderer, error) {
 }
 
 func ProvideBucket() (*bucketrepository.Repository, error) {
-	repo, err := bucketrepository.New(bucketrepository.Config{
-		BucketName: env.Vars.BucketName,
-	},
-	)
+	repo, err := bucketrepository.NewWire(bucketrepository.BucketName(env.Vars.BucketName))
 	if err != nil {
 		return nil, fmt.Errorf("could not create bucket: %s", err.Error())
 	}

@@ -28,6 +28,17 @@ func New(config Config) (*Repository, error) {
 	return &Repository{bucket}, nil
 }
 
+type BucketName string
+
+func NewWire(bucketName BucketName) (*Repository, error) {
+	bucket, err := setupGCP(ctx, string(bucketName))
+	if err != nil {
+		return &Repository{}, err
+	}
+
+	return &Repository{bucket}, nil
+}
+
 // Write writes a file to bucket
 func (c Repository) Write(fileName string, fileBytes []byte) error {
 	defaultError := fmt.Errorf("cannot write %s to bucket", fileName)
