@@ -16,14 +16,14 @@ const maxUploadSize = 2 * 1024 * 1024 // MB
 
 type Config struct {
 	Renderer template.Renderer
-	Serve
-	Bucket *bucketrepository.Repository
-	DB     *sql.DB
+	Serve    func(w http.ResponseWriter, r *http.Request, fileName string)
+	Bucket   *bucketrepository.Repository
+	DB       *sql.DB
 }
 
 type Controller struct {
 	Router   *mux.Router
-	serve    Serve
+	serve    func(w http.ResponseWriter, r *http.Request, fileName string)
 	renderer template.Renderer
 	bucket   *bucketrepository.Repository
 	db       *sql.DB
@@ -49,7 +49,7 @@ func New(config *Config) Controller {
 	return c
 }
 
-func NewWire(renderer template.Renderer, serve Serve, bucket *bucketrepository.Repository, db *sql.DB) Controller {
+func NewWire(renderer template.Renderer, serve func(w http.ResponseWriter, r *http.Request, fileName string), bucket *bucketrepository.Repository, db *sql.DB) Controller {
 	c := Controller{
 		serve:    serve,
 		renderer: renderer,

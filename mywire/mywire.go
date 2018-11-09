@@ -27,8 +27,8 @@ func ProvideBlogDB() *sql.DB {
 	return db.BlogDB
 }
 
-func ProvideTemplates() (*template.Template, error) {
-	return &template.Template{}, nil
+func ProvideTemplates() (template.Renderer, error) {
+	return template.Template{}, nil
 }
 
 func ProvideBucket() (*bucketrepository.Repository, error) {

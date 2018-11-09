@@ -10,7 +10,7 @@ import (
 type Template struct{}
 
 // Render gets the template, fills it with data and sends it to ResponseWriter
-func (tpl *Template) Render(w http.ResponseWriter, templateName string, data interface{}) {
+func (tpl Template) Render(w http.ResponseWriter, templateName string, data interface{}) {
 	tmpl, ok := templates[templateName]
 	if !ok {
 		logger.Log.Errorf("template %s does not exist", templateName)
