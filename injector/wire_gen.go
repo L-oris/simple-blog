@@ -3,7 +3,7 @@
 //go:generate wire
 //+build !wireinject
 
-package mywire
+package injector
 
 import (
 	"fmt"
@@ -60,7 +60,7 @@ func providePostController() (postcontroller.Controller, error) {
 	return controller, nil
 }
 
-// Injectors from mywire.go:
+// Injectors from injector.go:
 
 func InitializeRouter() (http.Handler, error) {
 	controller, err := providePostController()

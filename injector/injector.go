@@ -1,6 +1,6 @@
 //+build wireinject
 
-package mywire
+package injector
 
 import (
 	"net/http"

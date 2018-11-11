@@ -1,6 +1,6 @@
-//+build wireinject
+package injector
 
-package mywire
+// 'core.go' does not build any dependency with wire, therefore its functions will be excluded from generated code in 'wire_gen.go'
 
 import (
 	"database/sql"

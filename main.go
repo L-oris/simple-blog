@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/L-oris/yabb/foreign/env"
+	"github.com/L-oris/yabb/injector"
 	"github.com/L-oris/yabb/logger"
-	"github.com/L-oris/yabb/mywire"
 )
 
 func main() {
-	router, err := mywire.InitializeRouter()
+	router, err := injector.InitializeRouter()
 	if err != nil {
 		fmt.Printf("failed to create router: %s\n", err)
 		os.Exit(1)
