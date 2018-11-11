@@ -27,5 +27,3 @@ func main() {
 	logger.Log.Infof("server listening on port %s", env.Vars.Port)
 	logger.Log.Fatal(server.ListenAndServe())
 }
-
-// todo: provide all env.Vars in config to `InitializeWire` -> each one its own type

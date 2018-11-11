@@ -5,6 +5,8 @@ import (
 
 	"github.com/L-oris/yabb/foreign/env"
 	"github.com/L-oris/yabb/logger"
+
+	// driver for 'mysql'
 	_ "github.com/go-sql-driver/mysql"
 )
 
