@@ -6,12 +6,9 @@
 package mywire
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/L-oris/yabb/foreign/env"
-	"github.com/L-oris/yabb/foreign/template"
 	"github.com/L-oris/yabb/repositories/bucketrepository"
-	"github.com/L-oris/yabb/repositories/db"
 	"github.com/L-oris/yabb/repositories/postrepository"
 	"github.com/L-oris/yabb/router"
 	"github.com/L-oris/yabb/router/controllers/postcontroller"
@@ -20,7 +17,7 @@ import (
 	"net/http"
 )
 
-// Injectors from mywire.go:
+// Injectors from controllers.go:
 
 func provideRootController() (rootcontroller.Controller, error) {
 	renderer, err := provideRenderer()
@@ -46,25 +43,6 @@ func provideRootController() (rootcontroller.Controller, error) {
 	return controller, nil
 }
 
-func providePostRepository() (*postrepository.Repository, error) {
-	db := provideDB()
-	repository := postrepository.New(db)
-	return repository, nil
-}
-
-func providePostService() (*postservice.Service, error) {
-	repository, err := provideBucket()
-	if err != nil {
-		return nil, err
-	}
-	postrepositoryRepository, err := providePostRepository()
-	if err != nil {
-		return nil, err
-	}
-	service := postservice.New(repository, postrepositoryRepository)
-	return service, nil
-}
-
 func providePostController() (postcontroller.Controller, error) {
 	renderer, err := provideRenderer()
 	if err != nil {
@@ -81,6 +59,8 @@ func providePostController() (postcontroller.Controller, error) {
 	controller := postcontroller.New(config)
 	return controller, nil
 }
+
+// Injectors from mywire.go:
 
 func InitializeRouter() (http.Handler, error) {
 	controller, err := providePostController()
@@ -99,19 +79,30 @@ func InitializeRouter() (http.Handler, error) {
 	return handler, nil
 }
 
-// mywire.go:
+// Injectors from repositories.go:
 
-func provideFileServer() (func(w http.ResponseWriter, r *http.Request, name string), error) {
-	return http.ServeFile, nil
+func providePostRepository() (*postrepository.Repository, error) {
+	db := provideDB()
+	repository := postrepository.New(db)
+	return repository, nil
 }
 
-func provideDB() *sql.DB {
-	return db.BlogDB
+// Injectors from services.go:
+
+func providePostService() (*postservice.Service, error) {
+	repository, err := provideBucket()
+	if err != nil {
+		return nil, err
+	}
+	postrepositoryRepository, err := providePostRepository()
+	if err != nil {
+		return nil, err
+	}
+	service := postservice.New(repository, postrepositoryRepository)
+	return service, nil
 }
 
-func provideRenderer() (template.Renderer, error) {
-	return template.Template{}, nil
-}
+// repositories.go:
 
 func provideBucket() (*bucketrepository.Repository, error) {
 	repo, err := bucketrepository.New(bucketrepository.BucketName(env.Vars.BucketName))
