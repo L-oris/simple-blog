@@ -20,14 +20,7 @@ type Service struct {
 }
 
 // New creates a new PostService
-func New(config *Config) *Service {
-	return &Service{
-		bucket:     config.Bucket,
-		repository: config.Repository,
-	}
-}
-
-func NewWire(bucket *bucketrepository.Repository, repository *postrepository.Repository) *Service {
+func New(bucket *bucketrepository.Repository, repository *postrepository.Repository) *Service {
 	return &Service{
 		bucket:     bucket,
 		repository: repository,

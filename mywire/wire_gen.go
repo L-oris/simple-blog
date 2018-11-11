@@ -42,13 +42,13 @@ func provideRootController() (rootcontroller.Controller, error) {
 		Bucket:   repository,
 		DB:       db,
 	}
-	controller := rootcontroller.NewWire(config)
+	controller := rootcontroller.New(config)
 	return controller, nil
 }
 
 func providePostRepository() (*postrepository.Repository, error) {
 	db := provideDB()
-	repository := postrepository.NewWire(db)
+	repository := postrepository.New(db)
 	return repository, nil
 }
 
@@ -61,7 +61,7 @@ func providePostService() (*postservice.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service := postservice.NewWire(repository, postrepositoryRepository)
+	service := postservice.New(repository, postrepositoryRepository)
 	return service, nil
 }
 
@@ -78,7 +78,7 @@ func providePostController() (postcontroller.Controller, error) {
 		Renderer: renderer,
 		Service:  service,
 	}
-	controller := postcontroller.NewWire(config)
+	controller := postcontroller.New(config)
 	return controller, nil
 }
 
@@ -95,7 +95,7 @@ func InitializeRouter() (http.Handler, error) {
 		PostController: controller,
 		RootController: rootcontrollerController,
 	}
-	handler := router.NewWire(config)
+	handler := router.New(config)
 	return handler, nil
 }
 
@@ -114,7 +114,7 @@ func provideRenderer() (template.Renderer, error) {
 }
 
 func provideBucket() (*bucketrepository.Repository, error) {
-	repo, err := bucketrepository.NewWire(bucketrepository.BucketName(env.Vars.BucketName))
+	repo, err := bucketrepository.New(bucketrepository.BucketName(env.Vars.BucketName))
 	if err != nil {
 		return nil, fmt.Errorf("could not create bucket: %s", err.Error())
 	}

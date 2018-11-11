@@ -18,19 +18,10 @@ type Repository struct {
 	bucket *blob.Bucket
 }
 
-// New creates a new Repository
-func New(config Config) (*Repository, error) {
-	bucket, err := setupGCP(ctx, config.BucketName)
-	if err != nil {
-		return &Repository{}, err
-	}
-
-	return &Repository{bucket}, nil
-}
-
 type BucketName string
 
-func NewWire(bucketName BucketName) (*Repository, error) {
+// New creates a new Repository
+func New(bucketName BucketName) (*Repository, error) {
 	bucket, err := setupGCP(ctx, string(bucketName))
 	if err != nil {
 		return &Repository{}, err

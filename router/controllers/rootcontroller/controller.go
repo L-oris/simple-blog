@@ -30,26 +30,7 @@ type Controller struct {
 }
 
 // New creates a new controller and registers the routes
-func New(config *Config) Controller {
-	c := Controller{
-		serve:    config.Serve,
-		renderer: config.Renderer,
-		bucket:   config.Bucket,
-		db:       config.DB,
-	}
-
-	router := mux.NewRouter()
-	router.HandleFunc("/", c.home).Methods("GET")
-	router.HandleFunc("/ping", c.ping).Methods("GET")
-	router.HandleFunc("/pingDB", c.pingDB).Methods("GET")
-	router.PathPrefix("/static/").Handler(c.static())
-	router.HandleFunc("/bucket/{id}", c.serveBucketFileByID).Methods("GET")
-
-	c.Router = router
-	return c
-}
-
-func NewWire(config Config) Controller {
+func New(config Config) Controller {
 	c := Controller{
 		serve:    config.Serve,
 		renderer: config.Renderer,

@@ -19,14 +19,7 @@ type Repository struct {
 }
 
 // New creates a new Repository
-func New(config *Config) *Repository {
-	return &Repository{
-		DB: config.DB,
-	}
-}
-
-// NewWire creates a new Repository
-func NewWire(db *sql.DB) *Repository {
+func New(db *sql.DB) *Repository {
 	return &Repository{
 		DB: db,
 	}
